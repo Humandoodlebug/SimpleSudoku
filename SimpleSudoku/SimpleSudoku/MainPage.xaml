@@ -7,7 +7,34 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <!--<Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
 
+        <AppBar>
+            <StackPanel>
+                <AppBarButton Content="Save"/>
+            </StackPanel>
+            
+        </AppBar>
+    </Grid>-->
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        
+        <TextBlock Text="Main Menu" HorizontalAlignment="Center" Margin="30" FontSize="64"/>
+        <TextBlock Text="Username" Grid.Row="0" Margin="30,10"  FontSize="26" HorizontalAlignment="Right"/>
+        
+        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Stretch" Grid.Row="1">
+            <TextBlock Text="Continue Puzzle" HorizontalAlignment="Center" Margin="10" FontSize="36"/>
+            <TextBlock Text="New Puzzle" HorizontalAlignment="Center" Margin="10" FontSize="36"/>
+            <TextBlock Text="Leaderboard" HorizontalAlignment="Center" Margin="10" FontSize="36"/>
+            <TextBlock Text="Options" HorizontalAlignment="Center" Margin="10" FontSize="36"/>
+        </StackPanel>
     </Grid>
 </Page>
