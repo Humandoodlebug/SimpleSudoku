@@ -24,7 +24,7 @@ namespace SimpleSudoku
     {
         public MainPage()
         {
-            this.InitializeComponent();
+            InitializeComponent();
         }
     }
 }
