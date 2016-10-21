@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.UI.Xaml.Input;
 using Microsoft.EntityFrameworkCore;
+
 // ReSharper disable InconsistentNaming
 
 namespace SimpleSudoku
@@ -18,6 +19,7 @@ namespace SimpleSudoku
         Hard,
         Insane
     }
+
     public class SudokuDataContext : DbContext
     {
         public DbSet<User> Users { get; set; }
@@ -34,8 +36,7 @@ namespace SimpleSudoku
     [Table(nameof(User))]
     public class User
     {
-        [Key]
-        public string Username { get; set; }
+        [Key] public string Username { get; set; }
         public string Password { get; set; }
         public DateTime AverageSolvingTime { get; set; }
         public int AveragePuzzleDifficulty { get; set; }
@@ -47,29 +48,23 @@ namespace SimpleSudoku
     [Table(nameof(Old_Password))]
     public class Old_Password
     {
-        [Key, ForeignKey(nameof(User))]
-        public string Username { get; set; }
-        [Key]
-        public string OldPassword { get; set; }
+        [Key, ForeignKey(nameof(User))] public string Username { get; set; }
+        [Key] public string OldPassword { get; set; }
     }
 
     [Table(nameof(Puzzle))]
     public class Puzzle
     {
-        [Key]
-        public int Seed { get; set; }
+        [Key] public int Seed { get; set; }
         public PuzzleDifficulty Difficulty { get; set; }
     }
 
     [Table(nameof(Puzzle_Attempt))]
     public class Puzzle_Attempt
     {
-        [Key, ForeignKey(nameof(User))]
-        public string Username { get; set; }
-        [Key, ForeignKey(nameof(Puzzle))]
-        public int Seed { get; set; }
-        [Key]
-        public int AttemptNum { get; set; }
+        [Key, ForeignKey(nameof(User))] public string Username { get; set; }
+        [Key, ForeignKey(nameof(Puzzle))] public int Seed { get; set; }
+        [Key] public int AttemptNum { get; set; }
         public DateTime DateTimeAttempted { get; set; }
         public TimeSpan SolvingTime { get; set; }
         public int MistakeCount { get; set; }
