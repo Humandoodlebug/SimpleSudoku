@@ -31,8 +31,11 @@ namespace SimpleSudoku
         {
             this.InitializeComponent();
             this.Suspending += OnSuspending;
-            var db = new SudokuDataContext();
+
+            using (var db = new SudokuDataContext())
+            {
                 db.Database.Migrate();
+            }
         }
 
         /// <summary>
