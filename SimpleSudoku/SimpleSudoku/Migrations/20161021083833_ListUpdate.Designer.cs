@@ -8,9 +8,10 @@ using SimpleSudoku;
 namespace SimpleSudoku.Migrations
 {
     [DbContext(typeof(SudokuDataContext))]
-    partial class SudokuDataContextModelSnapshot : ModelSnapshot
+    [Migration("20161021083833_ListUpdate")]
+    partial class ListUpdate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.0.1");
@@ -42,8 +43,6 @@ namespace SimpleSudoku.Migrations
                 {
                     b.Property<string>("Username");
 
-                    b.Property<int>("Seed");
-
                     b.Property<int>("AttemptNum");
 
                     b.Property<DateTime>("DateTimeAttempted");
@@ -52,11 +51,13 @@ namespace SimpleSudoku.Migrations
 
                     b.Property<int>("Score");
 
+                    b.Property<int>("Seed");
+
                     b.Property<TimeSpan>("SolvingTime");
 
                     b.Property<string>("Username1");
 
-                    b.HasKey("Username", "Seed");
+                    b.HasKey("Username");
 
                     b.HasIndex("Seed");
 

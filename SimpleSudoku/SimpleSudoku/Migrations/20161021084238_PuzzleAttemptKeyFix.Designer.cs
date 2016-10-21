@@ -8,9 +8,10 @@ using SimpleSudoku;
 namespace SimpleSudoku.Migrations
 {
     [DbContext(typeof(SudokuDataContext))]
-    partial class SudokuDataContextModelSnapshot : ModelSnapshot
+    [Migration("20161021084238_PuzzleAttemptKeyFix")]
+    partial class PuzzleAttemptKeyFix
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.0.1");
