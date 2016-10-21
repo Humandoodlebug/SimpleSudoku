@@ -103,6 +103,10 @@
     <Compile Include="Migrations\20161021083833_ListUpdate.designer.cs">
       <DependentUpon>20161021083833_ListUpdate.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\20161021084238_PuzzleAttemptKeyFix.cs" />
+    <Compile Include="Migrations\20161021084238_PuzzleAttemptKeyFix.designer.cs">
+      <DependentUpon>20161021084238_PuzzleAttemptKeyFix.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\SudokuDataContextModelSnapshot.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SudokuDataContext.cs" />
