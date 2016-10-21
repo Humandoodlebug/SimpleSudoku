@@ -29,6 +29,14 @@ namespace SimpleSudoku
         {
             optionsBuilder.UseSqlite("Filename=SudokuAppData.db");
         }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Old_Password>().HasKey(x => new { x.Username, x.OldPassword });
+            modelBuilder.Entity<Puzzle>().HasKey(x => x.Seed);
+            modelBuilder.Entity<Puzzle_Attempt>().HasKey(x => x.Username);
+            modelBuilder.Entity<User>().HasKey(x => x.Username);
+        }
     }
 
     [Table(nameof(User))]
