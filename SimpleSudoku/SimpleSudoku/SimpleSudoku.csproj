@@ -99,6 +99,11 @@
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\20161022113734_InitialCreate.cs" />
+    <Compile Include="Migrations\20161022113734_InitialCreate.designer.cs">
+      <DependentUpon>20161022113734_InitialCreate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\SudokuDataContextModelSnapshot.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SudokuDataContext.cs" />
   </ItemGroup>
@@ -128,6 +133,7 @@
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>
