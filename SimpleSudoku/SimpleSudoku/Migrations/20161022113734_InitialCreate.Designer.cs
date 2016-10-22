@@ -8,8 +8,8 @@ using SimpleSudoku;
 namespace SimpleSudoku.Migrations
 {
     [DbContext(typeof(SudokuDataContext))]
-    [Migration("20161021084238_PuzzleAttemptKeyFix")]
-    partial class PuzzleAttemptKeyFix
+    [Migration("20161022113734_InitialCreate")]
+    partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -18,11 +18,11 @@ namespace SimpleSudoku.Migrations
 
             modelBuilder.Entity("SimpleSudoku.Old_Password", b =>
                 {
-                    b.Property<string>("Username");
+                    b.Property<string>("UserUsername");
 
                     b.Property<string>("OldPassword");
 
-                    b.HasKey("Username", "OldPassword");
+                    b.HasKey("UserUsername", "OldPassword");
 
                     b.ToTable("OldPasswords");
                 });
@@ -41,9 +41,9 @@ namespace SimpleSudoku.Migrations
 
             modelBuilder.Entity("SimpleSudoku.Puzzle_Attempt", b =>
                 {
-                    b.Property<string>("Username");
+                    b.Property<string>("UserUsername");
 
-                    b.Property<int>("Seed");
+                    b.Property<int>("PuzzleSeed");
 
                     b.Property<int>("AttemptNum");
 
@@ -55,13 +55,13 @@ namespace SimpleSudoku.Migrations
 
                     b.Property<TimeSpan>("SolvingTime");
 
-                    b.Property<string>("Username1");
+                    b.Property<string>("Username");
 
-                    b.HasKey("Username", "Seed");
+                    b.HasKey("UserUsername", "PuzzleSeed");
 
-                    b.HasIndex("Seed");
+                    b.HasIndex("PuzzleSeed");
 
-                    b.HasIndex("Username1");
+                    b.HasIndex("Username");
 
                     b.ToTable("PuzzleAttempts");
                 });
@@ -91,12 +91,12 @@ namespace SimpleSudoku.Migrations
                 {
                     b.HasOne("SimpleSudoku.Puzzle")
                         .WithMany("PuzzleAttempts")
-                        .HasForeignKey("Seed")
+                        .HasForeignKey("PuzzleSeed")
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("SimpleSudoku.User")
                         .WithMany("PuzzleAttempts")
-                        .HasForeignKey("Username1");
+                        .HasForeignKey("Username");
                 });
         }
     }

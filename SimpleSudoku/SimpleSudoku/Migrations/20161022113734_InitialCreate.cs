@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace SimpleSudoku.Migrations
 {
-    public partial class ListUpdate : Migration
+    public partial class InitialCreate : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -12,12 +12,12 @@ namespace SimpleSudoku.Migrations
                 name: "OldPasswords",
                 columns: table => new
                 {
-                    Username = table.Column<string>(nullable: false),
+                    UserUsername = table.Column<string>(nullable: false),
                     OldPassword = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_OldPasswords", x => new { x.Username, x.OldPassword });
+                    table.PrimaryKey("PK_OldPasswords", x => new { x.UserUsername, x.OldPassword });
                 });
 
             migrationBuilder.CreateTable(
@@ -54,41 +54,41 @@ namespace SimpleSudoku.Migrations
                 name: "PuzzleAttempts",
                 columns: table => new
                 {
-                    Username = table.Column<string>(nullable: false),
+                    UserUsername = table.Column<string>(nullable: false),
+                    PuzzleSeed = table.Column<int>(nullable: false),
                     AttemptNum = table.Column<int>(nullable: false),
                     DateTimeAttempted = table.Column<DateTime>(nullable: false),
                     MistakeCount = table.Column<int>(nullable: false),
                     Score = table.Column<int>(nullable: false),
-                    Seed = table.Column<int>(nullable: false),
                     SolvingTime = table.Column<TimeSpan>(nullable: false),
-                    Username1 = table.Column<string>(nullable: true)
+                    Username = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_PuzzleAttempts", x => x.Username);
+                    table.PrimaryKey("PK_PuzzleAttempts", x => new { x.UserUsername, x.PuzzleSeed });
                     table.ForeignKey(
-                        name: "FK_PuzzleAttempts_Puzzles_Seed",
-                        column: x => x.Seed,
+                        name: "FK_PuzzleAttempts_Puzzles_PuzzleSeed",
+                        column: x => x.PuzzleSeed,
                         principalTable: "Puzzles",
                         principalColumn: "Seed",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_PuzzleAttempts_Users_Username1",
-                        column: x => x.Username1,
+                        name: "FK_PuzzleAttempts_Users_Username",
+                        column: x => x.Username,
                         principalTable: "Users",
                         principalColumn: "Username",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_PuzzleAttempts_Seed",
+                name: "IX_PuzzleAttempts_PuzzleSeed",
                 table: "PuzzleAttempts",
-                column: "Seed");
+                column: "PuzzleSeed");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PuzzleAttempts_Username1",
+                name: "IX_PuzzleAttempts_Username",
                 table: "PuzzleAttempts",
-                column: "Username1");
+                column: "Username");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

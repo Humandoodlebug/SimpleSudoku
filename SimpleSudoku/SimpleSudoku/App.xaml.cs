@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -34,7 +35,15 @@ namespace SimpleSudoku
 
             using (var db = new SudokuDataContext())
             {
-                db.Database.Migrate();
+                try
+                {
+                    db.Database.Migrate();
+                }
+                //TODO: Add IO and Database exception handling for migrations here
+                catch ( Exception e)
+                {
+                    throw e;
+                }
             }
         }
 
