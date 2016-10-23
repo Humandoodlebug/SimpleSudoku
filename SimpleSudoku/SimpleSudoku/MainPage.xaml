@@ -5,43 +5,44 @@
     xmlns:local="using:SimpleSudoku"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d">
-
-    <!--<Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition/>
-        </Grid.RowDefinitions>
-
-        <AppBar>
-            <StackPanel>
-                <AppBarButton Content="Save"/>
-            </StackPanel>
-            
-        </AppBar>
-    </Grid>-->
-
+    mc:Ignorable="d"
+    Background="SlateGray">
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition/>
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
-            <ColumnDefinition Width="220"/>
-            <ColumnDefinition  MinWidth="150"/>
-        </Grid.ColumnDefinitions>
-        
-        <TextBlock Grid.Column="1" Text="Main Menu"  HorizontalAlignment="Center" Margin="0,30" FontSize="42"/>
-        <TextBlock Text="&lt;Username>" Grid.Row="0" Grid.Column="2" Margin="0,10,10,10"  FontSize="24" HorizontalAlignment="Right" VerticalAlignment="Center"/>
-        
-        
-        <StackPanel Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Stretch" Grid.Row="1" Grid.ColumnSpan="3">
-            <TextBlock Text="Continue Puzzle" HorizontalAlignment="Center" Margin="0,5" FontSize="28"/>
-            <TextBlock Text="New Puzzle" HorizontalAlignment="Center" Margin="0,5" FontSize="28"/>
-            <TextBlock Text="Leaderboard" HorizontalAlignment="Center" Margin="0,5" FontSize="28"/>
-            <TextBlock Text="Options" HorizontalAlignment="Center" Margin="0,5" FontSize="28"/>
-        </StackPanel>
+        <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Visibility="Visible">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <CommandBar ClosedDisplayMode="Compact" HorizontalContentAlignment="Left">
+                <CommandBar.PrimaryCommands>
+                <AppBarButton Icon="Home" Label="Main Menu" Margin="15,0"/>
+                </CommandBar.PrimaryCommands>
+            </CommandBar>
+        </Grid>
+
+        <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Visibility="Collapsed">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition MinWidth="150" />
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Column="1" Text="Main Menu" HorizontalAlignment="Center" Margin="5,30" FontSize="42" />
+            <TextBlock Text="&lt;Username>" Grid.Row="0" Grid.Column="2" Margin="0,10,10,10" FontSize="24"
+                       HorizontalAlignment="Right" VerticalAlignment="Center" />
+
+
+            <StackPanel Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Stretch" Grid.Row="1"
+                        Grid.ColumnSpan="3">
+                <TextBlock Text="Continue Puzzle" HorizontalAlignment="Center" Margin="0,5" FontSize="28" />
+                <TextBlock Text="New Puzzle" HorizontalAlignment="Center" Margin="0,5" FontSize="28" />
+                <TextBlock Text="Leaderboard" HorizontalAlignment="Center" Margin="0,5" FontSize="28" />
+                <TextBlock Text="Options" HorizontalAlignment="Center" Margin="0,5" FontSize="28" />
+            </StackPanel>
+        </Grid>
     </Grid>
 </Page>
-

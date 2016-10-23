@@ -8,6 +8,7 @@ using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Foundation.Metadata;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -16,6 +17,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Microsoft.EntityFrameworkCore;
+using Windows.UI.ViewManagement;
 
 namespace SimpleSudoku
 {
@@ -35,15 +37,8 @@ namespace SimpleSudoku
 
             using (var db = new SudokuDataContext())
             {
-                try
-                {
-                    db.Database.Migrate();
-                }
+                db.Database.Migrate();
                 //TODO: Add IO and Database exception handling for migrations here
-                catch ( Exception e)
-                {
-                    throw e;
-                }
             }
         }
 
