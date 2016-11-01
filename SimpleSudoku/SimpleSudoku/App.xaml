@@ -1,6 +1,6 @@
 ﻿<Application
-    x:Class="SimpleSudoku.App"
+    x:Class="SC.SimpleSudoku.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:SimpleSudoku">
+    xmlns:local="using:SC.SimpleSudoku">
 </Application>

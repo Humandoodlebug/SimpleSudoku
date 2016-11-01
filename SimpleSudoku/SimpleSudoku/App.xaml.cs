@@ -19,7 +19,7 @@ using Windows.UI.Xaml.Navigation;
 using Microsoft.EntityFrameworkCore;
 using Windows.UI.ViewManagement;
 
-namespace SimpleSudoku
+namespace SC.SimpleSudoku
 {
     /// <summary>
     /// Provides application-specific behavior to supplement the default Application class.
@@ -37,7 +37,23 @@ namespace SimpleSudoku
 
             using (var db = new SudokuDataContext())
             {
-                db.Database.Migrate();
+                try
+                {
+                    db.Database.Migrate();
+                }
+                catch(Exception e)
+                {
+#if DEBUG
+                    Debug.WriteLine($"Database Migration error: \"{e}\"");
+                    Debug.WriteLine("Deleting the database...");
+                    db.Database.EnsureDeleted();
+                    Debug.WriteLine("Database deleting. Retrying migration...");
+                    db.Database.Migrate();
+                    Debug.WriteLine("Migration successful.");
+#else
+                    throw e;
+#endif
+                }
                 //TODO: Add IO and Database exception handling for migrations here
             }
         }

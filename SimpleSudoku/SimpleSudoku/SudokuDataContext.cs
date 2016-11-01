@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 // ReSharper disable InconsistentNaming
 
-namespace SimpleSudoku
+namespace SC.SimpleSudoku
 {
     public enum PuzzleDifficulty
     {
@@ -22,6 +22,7 @@ namespace SimpleSudoku
         public DbSet<Old_Password> OldPasswords { get; set; }
         public DbSet<Puzzle> Puzzles { get; set; }
         public DbSet<Puzzle_Attempt> PuzzleAttempts { get; set; }
+        public DbSet<Base_Puzzle> BasePuzzles { get; set;}
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -32,8 +33,9 @@ namespace SimpleSudoku
         {
             modelBuilder.Entity<Old_Password>().HasKey(x => new {x.UserUsername, x.OldPassword});
             modelBuilder.Entity<Puzzle>().HasKey(x => x.Seed);
-            modelBuilder.Entity<Puzzle_Attempt>().HasKey(x => new {x.UserUsername, Seed = x.PuzzleSeed});
+            modelBuilder.Entity<Puzzle_Attempt>().HasKey(x => new {x.UserUsername,x.PuzzleSeed, x.AttemptNum});
             modelBuilder.Entity<User>().HasKey(x => x.Username);
+            modelBuilder.Entity<Base_Puzzle>().HasKey(x => x.ID);
         }
     }
 
@@ -42,9 +44,11 @@ namespace SimpleSudoku
     {
         [Key] public string Username { get; set; }
         public string Password { get; set; }
+        public int NumPuzzlesSolved { get; set; }
         public DateTime AverageSolvingTime { get; set; }
         public int AveragePuzzleDifficulty { get; set; }
         public int AverageScore { get; set; }
+        public long TotalScore { get; set; }
         public int CurrentPuzzleSeed { get; set; }
         public string CurrentPuzzleData { get; set; }
         public List<Puzzle_Attempt> PuzzleAttempts { get; set; }
@@ -72,8 +76,16 @@ namespace SimpleSudoku
         [Key, ForeignKey(nameof(Puzzle))] public int PuzzleSeed { get; set; }
         [Key] public int AttemptNum { get; set; }
         public DateTime DateTimeAttempted { get; set; }
+        public DateTime DateTimeCompleted { get; set; }
         public TimeSpan SolvingTime { get; set; }
         public int MistakeCount { get; set; }
         public int Score { get; set; }
+    }
+
+    public class Base_Puzzle
+    {
+        [Key] public int ID { get; set; }
+        public int Difficulty { get; set; }
+        public int[,] PuzzleData;
     }
 }

@@ -2,12 +2,25 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace SimpleSudoku.Migrations
+namespace SC.SimpleSudoku.Migrations
 {
     public partial class InitialCreate : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "BasePuzzles",
+                columns: table => new
+                {
+                    ID = table.Column<int>(nullable: false)
+                        .Annotation("Autoincrement", true),
+                    Difficulty = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BasePuzzles", x => x.ID);
+                });
+
             migrationBuilder.CreateTable(
                 name: "OldPasswords",
                 columns: table => new
@@ -43,7 +56,9 @@ namespace SimpleSudoku.Migrations
                     AverageSolvingTime = table.Column<DateTime>(nullable: false),
                     CurrentPuzzleData = table.Column<string>(nullable: true),
                     CurrentPuzzleSeed = table.Column<int>(nullable: false),
-                    Password = table.Column<string>(nullable: true)
+                    NumPuzzlesSolved = table.Column<int>(nullable: false),
+                    Password = table.Column<string>(nullable: true),
+                    TotalScore = table.Column<long>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -58,6 +73,7 @@ namespace SimpleSudoku.Migrations
                     PuzzleSeed = table.Column<int>(nullable: false),
                     AttemptNum = table.Column<int>(nullable: false),
                     DateTimeAttempted = table.Column<DateTime>(nullable: false),
+                    DateTimeCompleted = table.Column<DateTime>(nullable: false),
                     MistakeCount = table.Column<int>(nullable: false),
                     Score = table.Column<int>(nullable: false),
                     SolvingTime = table.Column<TimeSpan>(nullable: false),
@@ -65,7 +81,7 @@ namespace SimpleSudoku.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_PuzzleAttempts", x => new { x.UserUsername, x.PuzzleSeed });
+                    table.PrimaryKey("PK_PuzzleAttempts", x => new { x.UserUsername, x.PuzzleSeed, x.AttemptNum });
                     table.ForeignKey(
                         name: "FK_PuzzleAttempts_Puzzles_PuzzleSeed",
                         column: x => x.PuzzleSeed,
@@ -93,6 +109,9 @@ namespace SimpleSudoku.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "BasePuzzles");
+
             migrationBuilder.DropTable(
                 name: "OldPasswords");
 

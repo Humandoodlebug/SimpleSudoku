@@ -7,9 +7,9 @@
     <ProjectGuid>{5CA95530-6BF8-4887-8EA4-2C3EB7B559CA}</ProjectGuid>
     <OutputType>AppContainerExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SimpleSudoku</RootNamespace>
-    <AssemblyName>SimpleSudoku</AssemblyName>
-    <DefaultLanguage>en-US</DefaultLanguage>
+    <RootNamespace>SC.SimpleSudoku</RootNamespace>
+    <AssemblyName>SC.SimpleSudoku</AssemblyName>
+    <DefaultLanguage>en-GB</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion>10.0.14393.0</TargetPlatformVersion>
     <TargetPlatformMinVersion>10.0.14393.0</TargetPlatformMinVersion>
@@ -96,12 +96,13 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Converters\InvertBooleanConverter.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\20161022113734_InitialCreate.cs" />
-    <Compile Include="Migrations\20161022113734_InitialCreate.designer.cs">
-      <DependentUpon>20161022113734_InitialCreate.cs</DependentUpon>
+    <Compile Include="Migrations\20161101164558_InitialCreate.cs" />
+    <Compile Include="Migrations\20161101164558_InitialCreate.designer.cs">
+      <DependentUpon>20161101164558_InitialCreate.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\SudokuDataContextModelSnapshot.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -132,12 +133,18 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="MainPageResources.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <SDKReference Include="WindowsMobile, Version=10.0.14393.0">
       <Name>Windows Mobile Extensions for the UWP</Name>
     </SDKReference>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
-using SimpleSudoku;
+using SC.SimpleSudoku;
 
-namespace SimpleSudoku.Migrations
+namespace SC.SimpleSudoku.Migrations
 {
     [DbContext(typeof(SudokuDataContext))]
     partial class SudokuDataContextModelSnapshot : ModelSnapshot
@@ -15,7 +15,19 @@ namespace SimpleSudoku.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.0.1");
 
-            modelBuilder.Entity("SimpleSudoku.Old_Password", b =>
+            modelBuilder.Entity("SC.SimpleSudoku.Base_Puzzle", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("Difficulty");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("BasePuzzles");
+                });
+
+            modelBuilder.Entity("SC.SimpleSudoku.Old_Password", b =>
                 {
                     b.Property<string>("UserUsername");
 
@@ -26,7 +38,7 @@ namespace SimpleSudoku.Migrations
                     b.ToTable("OldPasswords");
                 });
 
-            modelBuilder.Entity("SimpleSudoku.Puzzle", b =>
+            modelBuilder.Entity("SC.SimpleSudoku.Puzzle", b =>
                 {
                     b.Property<int>("Seed")
                         .ValueGeneratedOnAdd();
@@ -38,7 +50,7 @@ namespace SimpleSudoku.Migrations
                     b.ToTable("Puzzles");
                 });
 
-            modelBuilder.Entity("SimpleSudoku.Puzzle_Attempt", b =>
+            modelBuilder.Entity("SC.SimpleSudoku.Puzzle_Attempt", b =>
                 {
                     b.Property<string>("UserUsername");
 
@@ -48,6 +60,8 @@ namespace SimpleSudoku.Migrations
 
                     b.Property<DateTime>("DateTimeAttempted");
 
+                    b.Property<DateTime>("DateTimeCompleted");
+
                     b.Property<int>("MistakeCount");
 
                     b.Property<int>("Score");
@@ -56,7 +70,7 @@ namespace SimpleSudoku.Migrations
 
                     b.Property<string>("Username");
 
-                    b.HasKey("UserUsername", "PuzzleSeed");
+                    b.HasKey("UserUsername", "PuzzleSeed", "AttemptNum");
 
                     b.HasIndex("PuzzleSeed");
 
@@ -65,7 +79,7 @@ namespace SimpleSudoku.Migrations
                     b.ToTable("PuzzleAttempts");
                 });
 
-            modelBuilder.Entity("SimpleSudoku.User", b =>
+            modelBuilder.Entity("SC.SimpleSudoku.User", b =>
                 {
                     b.Property<string>("Username");
 
@@ -79,21 +93,25 @@ namespace SimpleSudoku.Migrations
 
                     b.Property<int>("CurrentPuzzleSeed");
 
+                    b.Property<int>("NumPuzzlesSolved");
+
                     b.Property<string>("Password");
+
+                    b.Property<long>("TotalScore");
 
                     b.HasKey("Username");
 
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("SimpleSudoku.Puzzle_Attempt", b =>
+            modelBuilder.Entity("SC.SimpleSudoku.Puzzle_Attempt", b =>
                 {
-                    b.HasOne("SimpleSudoku.Puzzle")
+                    b.HasOne("SC.SimpleSudoku.Puzzle")
                         .WithMany("PuzzleAttempts")
                         .HasForeignKey("PuzzleSeed")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("SimpleSudoku.User")
+                    b.HasOne("SC.SimpleSudoku.User")
                         .WithMany("PuzzleAttempts")
                         .HasForeignKey("Username");
                 });
