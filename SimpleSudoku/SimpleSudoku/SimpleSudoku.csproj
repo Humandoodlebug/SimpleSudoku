@@ -97,7 +97,11 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="Converters\InvertBooleanConverter.cs" />
-    <Compile Include="MainPage.xaml.cs">
+    <Compile Include="Migrations\20161102211756_UserOptions.cs" />
+    <Compile Include="Migrations\20161102211756_UserOptions.designer.cs">
+      <DependentUpon>20161102211756_UserOptions.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Migrations\20161101164558_InitialCreate.cs" />
@@ -129,11 +133,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="MainPage.xaml">
+    <Page Include="Views\MainPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="MainPageResources.xaml">
+    <Page Include="Views\MainPageResources.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

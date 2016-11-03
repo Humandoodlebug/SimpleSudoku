@@ -51,6 +51,9 @@ namespace SC.SimpleSudoku
         public long TotalScore { get; set; }
         public int CurrentPuzzleSeed { get; set; }
         public string CurrentPuzzleData { get; set; }
+        public bool IsMistakeHighlightingActive { get; set; }
+        public bool IsLeaderboardVisible { get; set; }
+        public bool IsPuzzleTimerVisible { get; set; }
         public List<Puzzle_Attempt> PuzzleAttempts { get; set; }
     }
 

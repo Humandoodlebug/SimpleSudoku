@@ -1,0 +1,95 @@
+﻿<Page
+    x:Class="SC.SimpleSudoku.Views.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Page.Resources>
+        <ResourceDictionary Source="MainPageResources.xaml"/>
+    </Page.Resources>
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        
+        <Grid Visibility="Collapsed">
+            <ItemsControl ItemTemplate="{StaticResource RowTemplate}"/>
+        </Grid>
+
+        <Grid Visibility="Collapsed">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <CommandBar Name="AppCommandBar"  ClosedDisplayMode="Compact" HorizontalContentAlignment="Left">
+                <CommandBar.Content>
+                    <StackPanel>
+                        <AppBarButton Icon="Home" Label="Main Menu" Margin="15,0" IsCompact="{Binding IsOpen,ElementName=AppCommandBar,Converter={StaticResource InvertBooleanConverter}}"/>
+                    </StackPanel>
+                </CommandBar.Content>
+                <CommandBar.PrimaryCommands>
+                    <AppBarButton Icon="Help" Label="Hint"/>
+                    <AppBarButton Icon="View" Label="Reveal"/>
+                </CommandBar.PrimaryCommands>
+            </CommandBar>
+            <TextBlock HorizontalAlignment="Left" Margin="50,50,0,0" Grid.Row="1" TextWrapping="Wrap" Text="Elapsed Time: 00:00:00" FontSize="50" VerticalAlignment="Top"/>
+            <ContentControl Grid.Row="2" HorizontalAlignment="Center" Margin="10,20" ContentTemplate="{StaticResource PuzzleTouchEntryPanel}"/> <!--ToDo: Find out why there's a Xaml parse error when I set the Content property on this-->
+        </Grid>
+
+        <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Visibility="Collapsed">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition MinWidth="150" />
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Column="1" Text="Main Menu" HorizontalAlignment="Center" Margin="5,30" FontSize="42" />
+            <TextBlock Text="&lt;Username>" Grid.Row="0" Grid.Column="2" Margin="0,10,10,10" FontSize="24"
+                       HorizontalAlignment="Right" VerticalAlignment="Center" />
+
+
+            <StackPanel Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Stretch" Grid.Row="1"
+                        Grid.ColumnSpan="3">
+                <TextBlock Text="Continue Puzzle" HorizontalAlignment="Center" Margin="0,5" FontSize="28" />
+                <TextBlock Text="New Puzzle" HorizontalAlignment="Center" Margin="0,5" FontSize="28" />
+                <TextBlock Text="Leaderboard" HorizontalAlignment="Center" Margin="0,5" FontSize="28" />
+                <TextBlock Text="Options" HorizontalAlignment="Center" Margin="0,5" FontSize="28" />
+            </StackPanel>
+        </Grid>
+
+        <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Visibility="Collapsed">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition MinWidth="150" />
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Column="1" Text="Options" HorizontalAlignment="Center" Margin="5,30" FontSize="42" />
+
+
+            <StackPanel Grid.Row="1" Grid.Column="0" VerticalAlignment="Top" HorizontalAlignment="Center" Grid.ColumnSpan="3">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10">
+                    <TextBlock Text="Mistake Highlighting" FontSize="18" VerticalAlignment="Center" Margin="0,0,20,0"/>
+                    <ToggleSwitch/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10">
+                    <TextBlock Text="Leaderboard Visibility" FontSize="18" VerticalAlignment="Center" Margin="0,0,20,0"/>
+                    <ToggleSwitch/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10">
+                    <TextBlock Text="Puzzle Timer" FontSize="18" VerticalAlignment="Center" Margin="0,0,20,0"/>
+                    <ToggleSwitch/>
+                </StackPanel>
+                
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Page>

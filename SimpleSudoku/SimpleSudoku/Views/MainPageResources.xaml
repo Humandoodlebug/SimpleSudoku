@@ -1,0 +1,31 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="using:SC.SimpleSudoku.Converters">
+
+    <converters:InvertBooleanConverter x:Key="InvertBooleanConverter" />
+
+    <DataTemplate x:Key="CellTemplate">
+        <Button />
+    </DataTemplate>
+
+    <DataTemplate x:Key="RowTemplate">
+        <ItemsControl ItemTemplate="{StaticResource CellTemplate}" />
+    </DataTemplate>
+
+    <DataTemplate x:Key="PuzzleTouchEntryPanel">
+        <StackPanel Orientation="Horizontal">
+            <Button Content="0" FontSize="26" Width="50" Height="50" Margin="0,0,10,0" />
+            <Button Content="1" FontSize="26" Width="50" Height="50" Margin="10,0" />
+            <Button Content="2" FontSize="26" Width="50" Height="50" Margin="10,0" />
+            <Button Content="3" FontSize="26" Width="50" Height="50" Margin="10,0" />
+            <Button Content="4" FontSize="26" Width="50" Height="50" Margin="10,0" />
+            <Button Content="5" FontSize="26" Width="50" Height="50" Margin="10,0" />
+            <Button Content="6" FontSize="26" Width="50" Height="50" Margin="10,0" />
+            <Button Content="7" FontSize="26" Width="50" Height="50" Margin="10,0" />
+            <Button Content="8" FontSize="26" Width="50" Height="50" Margin="10,0" />
+            <Button Content="9" FontSize="26" Width="50" Height="50" Margin="10,0,0,0" />
+        </StackPanel>
+    </DataTemplate>
+
+</ResourceDictionary>

@@ -18,6 +18,7 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Microsoft.EntityFrameworkCore;
 using Windows.UI.ViewManagement;
+using SC.SimpleSudoku.Views;
 
 namespace SC.SimpleSudoku
 {
