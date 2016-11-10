@@ -97,18 +97,16 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="Converters\InvertBooleanConverter.cs" />
-    <Compile Include="Migrations\20161102211756_UserOptions.cs" />
-    <Compile Include="Migrations\20161102211756_UserOptions.designer.cs">
-      <DependentUpon>20161102211756_UserOptions.cs</DependentUpon>
+    <Compile Include="Migrations\20161110194029_InitialCreate.cs" />
+    <Compile Include="Migrations\20161110194029_InitialCreate.designer.cs">
+      <DependentUpon>20161110194029_InitialCreate.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\SudokuDataContextModelSnapshot.cs" />
+    <Compile Include="Models\Sudoku.cs" />
+    <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="Views\MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\20161101164558_InitialCreate.cs" />
-    <Compile Include="Migrations\20161101164558_InitialCreate.designer.cs">
-      <DependentUpon>20161101164558_InitialCreate.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\SudokuDataContextModelSnapshot.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SudokuDataContext.cs" />
   </ItemGroup>
@@ -148,9 +146,7 @@
       <Name>Windows Mobile Extensions for the UWP</Name>
     </SDKReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="ViewModels\" />
-  </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

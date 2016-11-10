@@ -12,10 +12,10 @@
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         
         <Grid Visibility="Collapsed">
-            <ItemsControl ItemTemplate="{StaticResource RowTemplate}"/>
+            
         </Grid>
 
-        <Grid Visibility="Collapsed">
+        <Grid Visibility="Visible">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition/>
@@ -33,7 +33,8 @@
                 </CommandBar.PrimaryCommands>
             </CommandBar>
             <TextBlock HorizontalAlignment="Left" Margin="50,50,0,0" Grid.Row="1" TextWrapping="Wrap" Text="Elapsed Time: 00:00:00" FontSize="50" VerticalAlignment="Top"/>
-            <ContentControl Grid.Row="2" HorizontalAlignment="Center" Margin="10,20" ContentTemplate="{StaticResource PuzzleTouchEntryPanel}"/> <!--ToDo: Find out why there's a Xaml parse error when I set the Content property on this-->
+            <ItemsControl Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" ItemTemplate="{StaticResource RowTemplate}"/>
+            <ContentControl Grid.Row="2" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Margin="10,20" ContentTemplate="{StaticResource PuzzleTouchEntryPanel}"/>
         </Grid>
 
         <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Visibility="Collapsed">

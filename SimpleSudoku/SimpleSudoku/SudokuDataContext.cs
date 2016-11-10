@@ -22,7 +22,7 @@ namespace SC.SimpleSudoku
         public DbSet<Old_Password> OldPasswords { get; set; }
         public DbSet<Puzzle> Puzzles { get; set; }
         public DbSet<Puzzle_Attempt> PuzzleAttempts { get; set; }
-        public DbSet<Base_Puzzle> BasePuzzles { get; set;}
+        public DbSet<Base_Puzzle> BasePuzzles { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -32,8 +32,8 @@ namespace SC.SimpleSudoku
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Old_Password>().HasKey(x => new {x.UserUsername, x.OldPassword});
-            modelBuilder.Entity<Puzzle>().HasKey(x => x.Seed);
-            modelBuilder.Entity<Puzzle_Attempt>().HasKey(x => new {x.UserUsername,x.PuzzleSeed, x.AttemptNum});
+            modelBuilder.Entity<Puzzle>().HasKey(x => new {x.Seed, x.BasePuzzleID});
+            modelBuilder.Entity<Puzzle_Attempt>().HasKey(x => new {x.UserUsername, x.PuzzleSeed, x.AttemptNum});
             modelBuilder.Entity<User>().HasKey(x => x.Username);
             modelBuilder.Entity<Base_Puzzle>().HasKey(x => x.ID);
         }
@@ -55,6 +55,7 @@ namespace SC.SimpleSudoku
         public bool IsLeaderboardVisible { get; set; }
         public bool IsPuzzleTimerVisible { get; set; }
         public List<Puzzle_Attempt> PuzzleAttempts { get; set; }
+        public List<Old_Password> OldPasswords { get; set; }
     }
 
     [Table(nameof(Old_Password))]
@@ -68,6 +69,7 @@ namespace SC.SimpleSudoku
     public class Puzzle
     {
         [Key] public int Seed { get; set; }
+        [Key] public int BasePuzzleID { get; set; }
         public PuzzleDifficulty Difficulty { get; set; }
         public List<Puzzle_Attempt> PuzzleAttempts { get; set; }
     }
@@ -89,6 +91,7 @@ namespace SC.SimpleSudoku
     {
         [Key] public int ID { get; set; }
         public int Difficulty { get; set; }
-        public int[,] PuzzleData;
+        public string PuzzleProblemData { get; set; }
+        public string PuzzleSolutionData { get; set; }
     }
 }
