@@ -96,13 +96,15 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Converters\BooleanToVisibilityConverter.cs" />
     <Compile Include="Converters\InvertBooleanConverter.cs" />
     <Compile Include="Migrations\20161110194029_InitialCreate.cs" />
     <Compile Include="Migrations\20161110194029_InitialCreate.designer.cs">
       <DependentUpon>20161110194029_InitialCreate.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\SudokuDataContextModelSnapshot.cs" />
-    <Compile Include="Models\Sudoku.cs" />
+    <Compile Include="Model\DelegateCommand.cs" />
+    <Compile Include="Model\Sudoku.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="Views\MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>

@@ -4,18 +4,25 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewModels="using:SC.SimpleSudoku.ViewModels"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
     <Page.Resources>
         <ResourceDictionary Source="MainPageResources.xaml"/>
     </Page.Resources>
+    <Page.DataContext>
+        <viewModels:MainViewModel/>
+    </Page.DataContext>
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         
-        <Grid Visibility="Collapsed">
-            
-        </Grid>
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{Binding CurrentNavState.IsPuzzleDifficultyVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <Button Content="Easy" FontSize="28" HorizontalAlignment="Center" Margin="0,3"/>
+            <Button Content="Medium" FontSize="28" HorizontalAlignment="Center" Margin="0,3"/>
+            <Button Content="Hard" FontSize="28" HorizontalAlignment="Center" Margin="0,3"/>
+            <Button Content="Insane" FontSize="28" HorizontalAlignment="Center" Margin="0,3"/>
+        </StackPanel>
 
-        <Grid Visibility="Visible">
+        <Grid Visibility="{Binding CurrentNavState.IsSolvingVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition/>
@@ -37,7 +44,7 @@
             <ContentControl Grid.Row="2" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Margin="10,20" ContentTemplate="{StaticResource PuzzleTouchEntryPanel}"/>
         </Grid>
 
-        <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Visibility="Collapsed">
+        <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Visibility="{Binding CurrentNavState.IsMainMenuVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition />
@@ -55,10 +62,10 @@
 
             <StackPanel Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Stretch" Grid.Row="1"
                         Grid.ColumnSpan="3">
-                <TextBlock Text="Continue Puzzle" HorizontalAlignment="Center" Margin="0,5" FontSize="28" />
-                <TextBlock Text="New Puzzle" HorizontalAlignment="Center" Margin="0,5" FontSize="28" />
-                <TextBlock Text="Leaderboard" HorizontalAlignment="Center" Margin="0,5" FontSize="28" />
-                <TextBlock Text="Options" HorizontalAlignment="Center" Margin="0,5" FontSize="28" />
+                <Button Content="Continue Puzzle" HorizontalAlignment="Center" Margin="0,5" FontSize="28" />
+                <Button Content="New Puzzle" HorizontalAlignment="Center" Margin="0,5" FontSize="28" Command="{Binding NewPuzzleCommand}"/>
+                <Button Content="Leaderboard" HorizontalAlignment="Center" Margin="0,5" FontSize="28" />
+                <Button Content="Options" HorizontalAlignment="Center" Margin="0,5" FontSize="28" />
             </StackPanel>
         </Grid>
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -13,34 +14,37 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using SC.SimpleSudoku.ViewModels;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
 namespace SC.SimpleSudoku.Views
 {
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
     public sealed partial class MainPage : Page
     {
-        private SystemNavigationManager SysNavManager;
+        private readonly SystemNavigationManager _sysNavManager;
+        private readonly MainViewModel _dataContext;
 
-        public void SetBackVisibility()
+        private void SetBackVisibility(object sender, PropertyChangedEventArgs e)
         {
-            //TODO: Implement INotifyPropertyChanged in the MainViewModel and create a property to store the visibility of the back button, subscribing this method to it and setting the button's visibility from here through sysNavManager.AppViewBackButtonVisibility.
+            _sysNavManager.AppViewBackButtonVisibility = _dataContext.CurrentNavState.PreviousNavState == null
+                ? AppViewBackButtonVisibility.Collapsed
+                : AppViewBackButtonVisibility.Visible;
         }
+
         public MainPage()
         {
             InitializeComponent();
-            SysNavManager = SystemNavigationManager.GetForCurrentView();
-            //Temporary testing code
-            SysNavManager.AppViewBackButtonVisibility = AppViewBackButtonVisibility.Visible;
-            SysNavManager.BackRequested += SysNavManager_BackRequested;
+            _sysNavManager = SystemNavigationManager.GetForCurrentView();
+            _dataContext = (MainViewModel) DataContext;
+            _sysNavManager.BackRequested += SysNavManager_BackRequested;
+            _dataContext.CurrentNavState.PropertyChanged += SetBackVisibility;
         }
 
         private void SysNavManager_BackRequested(object sender, BackRequestedEventArgs e)
         {
-            throw new NotImplementedException();
+            if (_dataContext.CurrentNavState.GoBack())
+                e.Handled = true;
         }
     }
 }

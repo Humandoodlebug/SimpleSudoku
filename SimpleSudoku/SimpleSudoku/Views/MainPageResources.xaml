@@ -4,7 +4,13 @@
     xmlns:converters="using:SC.SimpleSudoku.Converters">
 
     <converters:InvertBooleanConverter x:Key="InvertBooleanConverter" />
+    <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
 
+    <Style TargetType="Button">
+        <Setter Property="Background" Value="{StaticResource ApplicationPageBackgroundThemeBrush}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+    
     <DataTemplate x:Key="CellTemplate">
         <Button />
     </DataTemplate>
