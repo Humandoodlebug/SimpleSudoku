@@ -108,7 +108,7 @@ namespace SC.SimpleSudoku.Migrations
 
                     b.Property<bool>("IsLeaderboardVisible");
 
-                    b.Property<bool>("IsMistakeHighlightingActive");
+                    b.Property<bool>("IsMistakeHighlightingOn");
 
                     b.Property<bool>("IsPuzzleTimerVisible");
 

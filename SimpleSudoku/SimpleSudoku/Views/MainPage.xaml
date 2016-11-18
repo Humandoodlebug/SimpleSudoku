@@ -13,15 +13,16 @@
     <Page.DataContext>
         <viewModels:MainViewModel/>
     </Page.DataContext>
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        
-        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{Binding CurrentNavState.IsPuzzleDifficultyVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
-            <Button Content="Easy" FontSize="28" HorizontalAlignment="Center" Margin="0,3"/>
-            <Button Content="Medium" FontSize="28" HorizontalAlignment="Center" Margin="0,3"/>
-            <Button Content="Hard" FontSize="28" HorizontalAlignment="Center" Margin="0,3"/>
-            <Button Content="Insane" FontSize="28" HorizontalAlignment="Center" Margin="0,3"/>
-        </StackPanel>
 
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{Binding CurrentNavState.IsPuzzleDifficultyVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <Button Content="Easy" FontSize="28" HorizontalAlignment="Center"/>
+            <Button Content="Medium" FontSize="28" HorizontalAlignment="Center" Margin="0,5,0,0"/>
+            <Button Content="Hard" FontSize="28" HorizontalAlignment="Center" Margin="0,5,0,0"/>
+            <Button Content="Insane" FontSize="28" HorizontalAlignment="Center" Margin="0,5,0,0"/>
+        </StackPanel>
+        
         <Grid Visibility="{Binding CurrentNavState.IsSolvingVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -56,7 +57,7 @@
             </Grid.ColumnDefinitions>
 
             <TextBlock Grid.Column="1" Text="Main Menu" HorizontalAlignment="Center" Margin="5,30" FontSize="42" />
-            <TextBlock Text="&lt;Username>" Grid.Row="0" Grid.Column="2" Margin="0,10,10,10" FontSize="24"
+            <Button Content="&lt;Username>" Grid.Row="0" Grid.Column="2" Margin="0,10,10,10" FontSize="24"
                        HorizontalAlignment="Right" VerticalAlignment="Center" />
 
 
@@ -65,11 +66,11 @@
                 <Button Content="Continue Puzzle" HorizontalAlignment="Center" Margin="0,5" FontSize="28" />
                 <Button Content="New Puzzle" HorizontalAlignment="Center" Margin="0,5" FontSize="28" Command="{Binding NewPuzzleCommand}"/>
                 <Button Content="Leaderboard" HorizontalAlignment="Center" Margin="0,5" FontSize="28" />
-                <Button Content="Options" HorizontalAlignment="Center" Margin="0,5" FontSize="28" />
+                <Button Content="Options" HorizontalAlignment="Center" Margin="0,5" FontSize="28" Command="{Binding OptionsCommand}"/>
             </StackPanel>
         </Grid>
 
-        <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Visibility="Collapsed">
+        <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Visibility="{Binding CurrentNavState.IsOptionsVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition />
@@ -82,19 +83,21 @@
 
             <TextBlock Grid.Column="1" Text="Options" HorizontalAlignment="Center" Margin="5,30" FontSize="42" />
 
-
             <StackPanel Grid.Row="1" Grid.Column="0" VerticalAlignment="Top" HorizontalAlignment="Center" Grid.ColumnSpan="3">
+                
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10">
                     <TextBlock Text="Mistake Highlighting" FontSize="18" VerticalAlignment="Center" Margin="0,0,20,0"/>
-                    <ToggleSwitch/>
+                    <ToggleSwitch IsOn="{Binding Options.IsMistakeHighlightingOn, Mode=TwoWay}"/>
                 </StackPanel>
+                
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10">
                     <TextBlock Text="Leaderboard Visibility" FontSize="18" VerticalAlignment="Center" Margin="0,0,20,0"/>
-                    <ToggleSwitch/>
+                    <ToggleSwitch IsOn="{Binding Options.IsLeaderboardVisible, Mode=TwoWay}"/>
                 </StackPanel>
+                
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10">
                     <TextBlock Text="Puzzle Timer" FontSize="18" VerticalAlignment="Center" Margin="0,0,20,0"/>
-                    <ToggleSwitch/>
+                    <ToggleSwitch IsOn="{Binding Options.IsPuzzleTimerVisible, Mode=TwoWay}"/>
                 </StackPanel>
                 
             </StackPanel>

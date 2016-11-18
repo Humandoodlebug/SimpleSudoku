@@ -98,14 +98,10 @@
     </Compile>
     <Compile Include="Converters\BooleanToVisibilityConverter.cs" />
     <Compile Include="Converters\InvertBooleanConverter.cs" />
-    <Compile Include="Migrations\20161110194029_InitialCreate.cs" />
-    <Compile Include="Migrations\20161110194029_InitialCreate.designer.cs">
-      <DependentUpon>20161110194029_InitialCreate.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\SudokuDataContextModelSnapshot.cs" />
     <Compile Include="Model\DelegateCommand.cs" />
     <Compile Include="Model\Sudoku.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
+    <Compile Include="ViewModels\OptionsViewModel.cs" />
     <Compile Include="Views\MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
@@ -148,7 +144,9 @@
       <Name>Windows Mobile Extensions for the UWP</Name>
     </SDKReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Migrations\" />
+  </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

@@ -25,6 +25,7 @@ namespace SC.SimpleSudoku.Views
         private readonly SystemNavigationManager _sysNavManager;
         private readonly MainViewModel _dataContext;
 
+
         private void SetBackVisibility(object sender, PropertyChangedEventArgs e)
         {
             _sysNavManager.AppViewBackButtonVisibility = _dataContext.CurrentNavState.PreviousNavState == null

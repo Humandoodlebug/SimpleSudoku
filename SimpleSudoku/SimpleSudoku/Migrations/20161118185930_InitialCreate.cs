@@ -47,7 +47,7 @@ namespace SC.SimpleSudoku.Migrations
                     CurrentPuzzleData = table.Column<string>(nullable: true),
                     CurrentPuzzleSeed = table.Column<int>(nullable: false),
                     IsLeaderboardVisible = table.Column<bool>(nullable: false),
-                    IsMistakeHighlightingActive = table.Column<bool>(nullable: false),
+                    IsMistakeHighlightingOn = table.Column<bool>(nullable: false),
                     IsPuzzleTimerVisible = table.Column<bool>(nullable: false),
                     NumPuzzlesSolved = table.Column<int>(nullable: false),
                     Password = table.Column<string>(nullable: true),

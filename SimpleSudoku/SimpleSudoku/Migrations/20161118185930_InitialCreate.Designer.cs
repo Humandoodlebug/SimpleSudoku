@@ -8,7 +8,7 @@ using SC.SimpleSudoku;
 namespace SC.SimpleSudoku.Migrations
 {
     [DbContext(typeof(SudokuDataContext))]
-    [Migration("20161110194029_InitialCreate")]
+    [Migration("20161118185930_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -109,7 +109,7 @@ namespace SC.SimpleSudoku.Migrations
 
                     b.Property<bool>("IsLeaderboardVisible");
 
-                    b.Property<bool>("IsMistakeHighlightingActive");
+                    b.Property<bool>("IsMistakeHighlightingOn");
 
                     b.Property<bool>("IsPuzzleTimerVisible");
 

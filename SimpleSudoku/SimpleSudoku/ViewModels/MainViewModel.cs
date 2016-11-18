@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using SC.SimpleSudoku.Model;
@@ -11,6 +10,20 @@ namespace SC.SimpleSudoku.ViewModels
     internal class MainViewModel : INotifyPropertyChanged
     {
         private NavigationState _currentNavState = new NavigationState();
+        private OptionsViewModel _options = new OptionsViewModel(new User()); //TODO: Pass in the currently signed in user.
+
+        public OptionsViewModel Options
+        {
+            get { return _options; }
+            set
+            {
+                if (_options == value)
+                    return;
+                _options = value;
+                OnPropertyChanged();
+            }
+        }
+
         public CellViewModel[][] CurrentSudokuPuzzle { get; set; }
 
         public NavigationState CurrentNavState
@@ -28,11 +41,19 @@ namespace SC.SimpleSudoku.ViewModels
         public User CurrentUser { get; set; }
 
 
-        public ICommand NewPuzzleCommand => new DelegateCommand(obj => NewPuzzle());
+        public ICommand NewPuzzleCommand => new DelegateCommand(obj => GotoNewPuzzle());
+
+        public ICommand OptionsCommand => new DelegateCommand(obj => GotoOptions());
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public void NewPuzzle()
+        private void GotoOptions()
+        {
+            CurrentNavState.RecordView();
+            CurrentNavState.CurrentView = NavigationState.View.Options;
+        }
+
+        private void GotoNewPuzzle()
         {
             CurrentNavState.RecordView();
             CurrentNavState.CurrentView = NavigationState.View.PuzzleDifficulty;
@@ -49,7 +70,8 @@ namespace SC.SimpleSudoku.ViewModels
             {
                 MainMenu,
                 PuzzleDifficulty,
-                Solving
+                Solving,
+                Options
             }
 
             private View _currentView;
@@ -67,12 +89,14 @@ namespace SC.SimpleSudoku.ViewModels
                     OnPropertyChanged(nameof(IsMainMenuVisible));
                     OnPropertyChanged(nameof(IsPuzzleDifficultyVisible));
                     OnPropertyChanged(nameof(IsSolvingVisible));
+                    OnPropertyChanged(nameof(IsOptionsVisible));
                 }
             }
 
             public bool IsMainMenuVisible => CurrentView == View.MainMenu;
             public bool IsPuzzleDifficultyVisible => CurrentView == View.PuzzleDifficulty;
             public bool IsSolvingVisible => CurrentView == View.Solving;
+            public bool IsOptionsVisible => CurrentView == View.Options;
 
             public NavigationState PreviousNavState
             {
@@ -91,13 +115,13 @@ namespace SC.SimpleSudoku.ViewModels
 
             public void RecordView()
             {
-                PreviousNavState = new NavigationState { PreviousNavState = PreviousNavState, CurrentView = CurrentView };
+                PreviousNavState = new NavigationState {PreviousNavState = PreviousNavState, CurrentView = CurrentView};
             }
 
             public bool GoBack()
             {
                 if (PreviousNavState == null)
-                return false;
+                    return false;
                 CurrentView = PreviousNavState.CurrentView;
 
                 PreviousNavState = PreviousNavState.PreviousNavState;
