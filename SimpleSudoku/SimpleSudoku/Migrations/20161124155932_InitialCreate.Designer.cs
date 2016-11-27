@@ -8,7 +8,7 @@ using SC.SimpleSudoku;
 namespace SC.SimpleSudoku.Migrations
 {
     [DbContext(typeof(SudokuDataContext))]
-    [Migration("20161118185930_InitialCreate")]
+    [Migration("20161124155932_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

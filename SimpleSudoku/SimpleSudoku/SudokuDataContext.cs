@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.IO;
+using Windows.Storage;
 using Microsoft.EntityFrameworkCore;
 
 // ReSharper disable InconsistentNaming
@@ -39,7 +41,6 @@ namespace SC.SimpleSudoku
         }
     }
 
-    [Table(nameof(User))]
     public class User
     {
         [Key] public string Username { get; set; }
@@ -51,21 +52,21 @@ namespace SC.SimpleSudoku
         public long TotalScore { get; set; }
         public int CurrentPuzzleSeed { get; set; }
         public string CurrentPuzzleData { get; set; }
-        public bool IsMistakeHighlightingOn { get; set; }
-        public bool IsLeaderboardVisible { get; set; }
-        public bool IsPuzzleTimerVisible { get; set; }
+        public bool IsMistakeHighlightingOn { get; set; } = true;
+        public bool IsLeaderboardVisible { get; set; } = true;
+        public bool IsPuzzleTimerVisible { get; set; } = true;
         public List<Puzzle_Attempt> PuzzleAttempts { get; set; }
         public List<Old_Password> OldPasswords { get; set; }
     }
 
-    [Table(nameof(Old_Password))]
+
     public class Old_Password
     {
         [Key, ForeignKey(nameof(User))] public string UserUsername { get; set; }
         [Key] public string OldPassword { get; set; }
     }
 
-    [Table(nameof(Puzzle))]
+
     public class Puzzle
     {
         [Key] public int Seed { get; set; }
@@ -74,7 +75,7 @@ namespace SC.SimpleSudoku
         public List<Puzzle_Attempt> PuzzleAttempts { get; set; }
     }
 
-    [Table(nameof(Puzzle_Attempt))]
+
     public class Puzzle_Attempt
     {
         [Key, ForeignKey(nameof(User))] public string UserUsername { get; set; }

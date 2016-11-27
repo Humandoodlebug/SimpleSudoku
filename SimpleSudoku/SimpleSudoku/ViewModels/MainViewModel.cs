@@ -1,16 +1,34 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using SC.SimpleSudoku.Model;
+using static SC.SimpleSudoku.App;
 
 // ReSharper disable ExplicitCallerInfoArgument
 
 namespace SC.SimpleSudoku.ViewModels
 {
-    internal class MainViewModel : INotifyPropertyChanged
+    internal sealed class MainViewModel : INotifyPropertyChanged
     {
         private NavigationState _currentNavState = new NavigationState();
-        private OptionsViewModel _options = new OptionsViewModel(new User()); //TODO: Pass in the currently signed in user.
+
+        private UserViewModel _currentUser = new UserViewModel(new User
+        {
+            Username = "Sign in",
+            IsMistakeHighlightingOn = true,
+            IsPuzzleTimerVisible = true,
+            IsLeaderboardVisible = false
+        });
+
+        private OptionsViewModel _options = new OptionsViewModel(new User() /*TODO: Pass in the currently signed in user.*/);
+        private bool _isSignedIn;
+        private string _loginErrorMessage;
+
+        public string EnteredUsername { get; set; }
+        public string EnteredPassword { get; set; }
 
         public OptionsViewModel Options
         {
@@ -38,14 +56,73 @@ namespace SC.SimpleSudoku.ViewModels
             }
         }
 
-        public User CurrentUser { get; set; }
+        public UserViewModel CurrentUser
+        {
+            get { return _currentUser; }
+            set
+            {
+                _currentUser = value;
+                OnPropertyChanged();
+            }
+        }
 
+        public bool IsSignedIn
+        {
+            get { return _isSignedIn; }
+            private set
+            {
+                if (_isSignedIn == value)
+                    return;
+                _isSignedIn = value;
+                OnPropertyChanged();
+            }
+        }
 
         public ICommand NewPuzzleCommand => new DelegateCommand(obj => GotoNewPuzzle());
 
         public ICommand OptionsCommand => new DelegateCommand(obj => GotoOptions());
 
+        public ICommand SignInCommand => new DelegateCommand(obj => SignIn());
+        public ICommand SignUpCommand => new DelegateCommand(obj => SignUp());
+
+        private void SignUp()
+        {
+            
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
+
+        public string LoginErrorMessage
+        {
+            get { return _loginErrorMessage; }
+            private set
+            {
+                if (_loginErrorMessage == value)
+                    return;
+                _loginErrorMessage = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private void SignIn()
+        {
+                var user = Database.Users.FirstOrDefault(x => string.Equals(x.Username, EnteredUsername, StringComparison.CurrentCultureIgnoreCase));
+                if (user == null)
+                {
+                    LoginErrorMessage = "Sorry, this username/password combination is not recognised, please try again.";
+                    return;
+                }
+                if (user.Password != EnteredPassword)
+                {
+                LoginErrorMessage = "Sorry, this username/password combination is not recognised, please try again.";
+                return;
+                }
+                CurrentUser = new UserViewModel(user);
+                IsSignedIn = true;
+            EnteredUsername = string.Empty;
+            EnteredPassword = string.Empty;
+            LoginErrorMessage = string.Empty;
+        }
 
         private void GotoOptions()
         {
@@ -59,7 +136,7 @@ namespace SC.SimpleSudoku.ViewModels
             CurrentNavState.CurrentView = NavigationState.View.PuzzleDifficulty;
         }
 
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }

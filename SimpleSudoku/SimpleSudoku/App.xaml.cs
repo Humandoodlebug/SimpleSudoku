@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.UI.Xaml;
@@ -15,7 +16,7 @@ namespace SC.SimpleSudoku
     /// </summary>
     public sealed partial class App : Application
     {
-        private SudokuDataContext _database;
+        public static SudokuDataContext Database { get; set; }
 
         /// <summary>
         ///     Initializes the singleton application object.  This is the first line of authored code
@@ -25,28 +26,38 @@ namespace SC.SimpleSudoku
         {
             InitializeComponent();
             Suspending += OnSuspending;
-
-            _database = new SudokuDataContext();
+            if (Database == null)
+                Database = new SudokuDataContext();
 
             try
             {
-
-                _database.Database.Migrate();
+                Database.Database.Migrate();
             }
             catch (Exception e)
             {
 #if DEBUG
                 Debug.WriteLine($"Database Migration error: \"{e}\"");
                 Debug.WriteLine("Deleting the database...");
-                _database.Database.EnsureDeleted();
+                Database.Database.EnsureDeleted();
                 Debug.WriteLine("Database deleted. Retrying migration...");
-                _database.Database.Migrate();
+                Database.Database.Migrate();
                 Debug.WriteLine("Migration successful.");
 #else
                     throw e;
 #endif
             }
             //TODO: Add IO and Database exception handling for migrations here
+#if DEBUG
+            if (!Database.Users.Any(x => x.Username == "TestUser"))
+            {
+                Database.Users.Add(new User
+                {
+                    Username = "TestUser",
+                    Password = "1234"
+                });
+                Database.SaveChangesAsync();
+            }
+#endif
         }
 
         /// <summary>
@@ -110,7 +121,8 @@ namespace SC.SimpleSudoku
         {
             var deferral = e.SuspendingOperation.GetDeferral();
             //TODO: Save application state and stop any background activity
-            _database.SaveChanges();
+            Database.SaveChanges();
+            Database.Dispose();
             deferral.Complete();
         }
     }

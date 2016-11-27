@@ -5,47 +5,55 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewModels="using:SC.SimpleSudoku.ViewModels"
+    xmlns:views="using:SC.SimpleSudoku.Views"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
     <Page.Resources>
-        <ResourceDictionary Source="MainPageResources.xaml"/>
+        <ResourceDictionary Source="MainPageResources.xaml" />
     </Page.Resources>
     <Page.DataContext>
-        <viewModels:MainViewModel/>
+        <viewModels:MainViewModel />
     </Page.DataContext>
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{Binding CurrentNavState.IsPuzzleDifficultyVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
-            <Button Content="Easy" FontSize="28" HorizontalAlignment="Center"/>
-            <Button Content="Medium" FontSize="28" HorizontalAlignment="Center" Margin="0,5,0,0"/>
-            <Button Content="Hard" FontSize="28" HorizontalAlignment="Center" Margin="0,5,0,0"/>
-            <Button Content="Insane" FontSize="28" HorizontalAlignment="Center" Margin="0,5,0,0"/>
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center"
+                    Visibility="{Binding CurrentNavState.IsPuzzleDifficultyVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <Button Content="Easy" FontSize="28" HorizontalAlignment="Center" />
+            <Button Content="Medium" FontSize="28" HorizontalAlignment="Center" Margin="0,5,0,0" />
+            <Button Content="Hard" FontSize="28" HorizontalAlignment="Center" Margin="0,5,0,0" />
+            <Button Content="Insane" FontSize="28" HorizontalAlignment="Center" Margin="0,5,0,0" />
         </StackPanel>
-        
-        <Grid Visibility="{Binding CurrentNavState.IsSolvingVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+
+        <Grid
+            Visibility="{Binding CurrentNavState.IsSolvingVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition/>
-                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-            <CommandBar Name="AppCommandBar"  ClosedDisplayMode="Compact" HorizontalContentAlignment="Left">
+            <CommandBar Name="AppCommandBar" ClosedDisplayMode="Compact" HorizontalContentAlignment="Left">
                 <CommandBar.Content>
                     <StackPanel>
-                        <AppBarButton Icon="Home" Label="Main Menu" Margin="15,0" IsCompact="{Binding IsOpen,ElementName=AppCommandBar,Converter={StaticResource InvertBooleanConverter}}"/>
+                        <AppBarButton Icon="Home" Label="Main Menu" Margin="15,0"
+                                      IsCompact="{Binding IsOpen,ElementName=AppCommandBar,Converter={StaticResource InvertBooleanConverter}}" />
                     </StackPanel>
                 </CommandBar.Content>
                 <CommandBar.PrimaryCommands>
-                    <AppBarButton Icon="Help" Label="Hint"/>
-                    <AppBarButton Icon="View" Label="Reveal"/>
+                    <AppBarButton Icon="Help" Label="Hint" />
+                    <AppBarButton Icon="View" Label="Reveal" />
                 </CommandBar.PrimaryCommands>
             </CommandBar>
-            <TextBlock HorizontalAlignment="Left" Margin="50,50,0,0" Grid.Row="1" TextWrapping="Wrap" Text="Elapsed Time: 00:00:00" FontSize="50" VerticalAlignment="Top"/>
-            <ItemsControl Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" ItemTemplate="{StaticResource RowTemplate}"/>
-            <ContentControl Grid.Row="2" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Margin="10,20" ContentTemplate="{StaticResource PuzzleTouchEntryPanel}"/>
+            <TextBlock HorizontalAlignment="Left" Margin="50,50,0,0" Grid.Row="1" TextWrapping="Wrap"
+                       Text="Elapsed Time: 00:00:00" FontSize="50" VerticalAlignment="Top" />
+            <ItemsControl Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center"
+                          ItemTemplate="{StaticResource RowTemplate}" />
+            <ContentControl Grid.Row="2" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                            Margin="10,20" ContentTemplate="{StaticResource PuzzleTouchEntryPanel}" />
         </Grid>
 
-        <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Visibility="{Binding CurrentNavState.IsMainMenuVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+        <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+              Visibility="{Binding CurrentNavState.IsMainMenuVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition />
@@ -57,20 +65,57 @@
             </Grid.ColumnDefinitions>
 
             <TextBlock Grid.Column="1" Text="Main Menu" HorizontalAlignment="Center" Margin="5,30" FontSize="42" />
-            <Button Content="&lt;Username>" Grid.Row="0" Grid.Column="2" Margin="0,10,10,10" FontSize="24"
-                       HorizontalAlignment="Right" VerticalAlignment="Center" />
+            <Button Content="{Binding CurrentUser.Username}" Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Margin="0,10,10,10"
+                    FontSize="24"
+                    HorizontalAlignment="Right" VerticalAlignment="Center">
+                <Button.Flyout>
+                    <Flyout Placement="Bottom">
+                        <StackPanel MaxWidth="400">
+                            <Grid Visibility="{Binding IsSignedIn, Converter={StaticResource InvertBooleanConverter}}">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition MinWidth="120"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="2,2,10,2" Text="Username"/>
+                                <TextBox Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Margin="2" Text="{Binding EnteredUsername, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                <TextBlock Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="2,2,10,2" Text="Password"/>
+                                <PasswordBox Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Margin="2" Password="{Binding EnteredPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                
+                                <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Right">
+                                    <TextBlock Text="{Binding LoginErrorMessage}" TextWrapping="WrapWholeWords" Foreground="Red"/>
+                                    <StackPanel Orientation="Horizontal">
+                                    <Button Content="Sign In" HorizontalAlignment="Center" Margin="5" Command="{Binding SignInCommand}"/>
+                                    <Button Content="Sign Up" HorizontalAlignment="Center" Margin="5" Command="{Binding SignUpCommand}"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Grid>
+                            <Grid Visibility="{Binding IsSignedIn}">
+                                <Button></Button>
+                            </Grid>
+                        </StackPanel>
+                    </Flyout>
+                </Button.Flyout>
+            </Button>
 
 
             <StackPanel Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Stretch" Grid.Row="1"
                         Grid.ColumnSpan="3">
                 <Button Content="Continue Puzzle" HorizontalAlignment="Center" Margin="0,5" FontSize="28" />
-                <Button Content="New Puzzle" HorizontalAlignment="Center" Margin="0,5" FontSize="28" Command="{Binding NewPuzzleCommand}"/>
+                <Button Content="New Puzzle" HorizontalAlignment="Center" Margin="0,5" FontSize="28"
+                        Command="{Binding NewPuzzleCommand}" />
                 <Button Content="Leaderboard" HorizontalAlignment="Center" Margin="0,5" FontSize="28" />
-                <Button Content="Options" HorizontalAlignment="Center" Margin="0,5" FontSize="28" Command="{Binding OptionsCommand}"/>
+                <Button Content="Options" HorizontalAlignment="Center" Margin="0,5" FontSize="28"
+                        Command="{Binding OptionsCommand}" />
             </StackPanel>
         </Grid>
 
-        <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Visibility="{Binding CurrentNavState.IsOptionsVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+        <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+              Visibility="{Binding CurrentNavState.IsOptionsVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition />
@@ -83,23 +128,24 @@
 
             <TextBlock Grid.Column="1" Text="Options" HorizontalAlignment="Center" Margin="5,30" FontSize="42" />
 
-            <StackPanel Grid.Row="1" Grid.Column="0" VerticalAlignment="Top" HorizontalAlignment="Center" Grid.ColumnSpan="3">
-                
+            <StackPanel Grid.Row="1" Grid.Column="0" VerticalAlignment="Top" HorizontalAlignment="Center"
+                        Grid.ColumnSpan="3">
+
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10">
-                    <TextBlock Text="Mistake Highlighting" FontSize="18" VerticalAlignment="Center" Margin="0,0,20,0"/>
-                    <ToggleSwitch IsOn="{Binding Options.IsMistakeHighlightingOn, Mode=TwoWay}"/>
+                    <TextBlock Text="Mistake Highlighting" FontSize="18" VerticalAlignment="Center" Margin="0,0,20,0" />
+                    <ToggleSwitch IsOn="{Binding Options.IsMistakeHighlightingOn, Mode=TwoWay}" />
                 </StackPanel>
-                
+
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10">
-                    <TextBlock Text="Leaderboard Visibility" FontSize="18" VerticalAlignment="Center" Margin="0,0,20,0"/>
-                    <ToggleSwitch IsOn="{Binding Options.IsLeaderboardVisible, Mode=TwoWay}"/>
+                    <TextBlock Text="Leaderboard Visibility" FontSize="18" VerticalAlignment="Center" Margin="0,0,20,0" />
+                    <ToggleSwitch IsOn="{Binding Options.IsLeaderboardVisible, Mode=TwoWay}" />
                 </StackPanel>
-                
+
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10">
-                    <TextBlock Text="Puzzle Timer" FontSize="18" VerticalAlignment="Center" Margin="0,0,20,0"/>
-                    <ToggleSwitch IsOn="{Binding Options.IsPuzzleTimerVisible, Mode=TwoWay}"/>
+                    <TextBlock Text="Puzzle Timer" FontSize="18" VerticalAlignment="Center" Margin="0,0,20,0" />
+                    <ToggleSwitch IsOn="{Binding Options.IsPuzzleTimerVisible, Mode=TwoWay}" />
                 </StackPanel>
-                
+
             </StackPanel>
         </Grid>
     </Grid>
