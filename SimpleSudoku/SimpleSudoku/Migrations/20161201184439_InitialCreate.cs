@@ -43,7 +43,7 @@ namespace SC.SimpleSudoku.Migrations
                     Username = table.Column<string>(nullable: false),
                     AveragePuzzleDifficulty = table.Column<int>(nullable: false),
                     AverageScore = table.Column<int>(nullable: false),
-                    AverageSolvingTime = table.Column<DateTime>(nullable: false),
+                    AverageSolvingTime = table.Column<TimeSpan>(nullable: false),
                     CurrentPuzzleData = table.Column<string>(nullable: true),
                     CurrentPuzzleSeed = table.Column<int>(nullable: false),
                     IsLeaderboardVisible = table.Column<bool>(nullable: false),

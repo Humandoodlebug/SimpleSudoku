@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace SC.SimpleSudoku.ViewModels
 {
@@ -45,15 +46,20 @@ namespace SC.SimpleSudoku.ViewModels
                 OnPropertyChanged();
             }
         }
-        public DateTime AverageSolvingTime
+        public TimeSpan AverageSolvingTime
         {
             get { return _currentUser.AverageSolvingTime; }
             set
             {
                 _currentUser.AverageSolvingTime = value;
                 OnPropertyChanged();
+                // ReSharper disable once ExplicitCallerInfoArgument
+                OnPropertyChanged(nameof(AverageSolvingTimeString));
             }
         }
+
+        public string AverageSolvingTimeString => AverageSolvingTime.ToString("g");
+
         public int AveragePuzzleDifficulty
         {
             get { return _currentUser.AveragePuzzleDifficulty; }

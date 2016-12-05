@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.IO;
-using Windows.Storage;
 using Microsoft.EntityFrameworkCore;
 
 // ReSharper disable InconsistentNaming
@@ -46,7 +44,7 @@ namespace SC.SimpleSudoku
         [Key] public string Username { get; set; }
         public string Password { get; set; }
         public int NumPuzzlesSolved { get; set; }
-        public DateTime AverageSolvingTime { get; set; }
+        public TimeSpan AverageSolvingTime { get; set; }
         public int AveragePuzzleDifficulty { get; set; }
         public int AverageScore { get; set; }
         public long TotalScore { get; set; }
@@ -78,8 +76,8 @@ namespace SC.SimpleSudoku
 
     public class Puzzle_Attempt
     {
-        [Key, ForeignKey(nameof(User))] public string UserUsername { get; set; }
-        [Key, ForeignKey(nameof(Puzzle))] public int PuzzleSeed { get; set; }
+        [Key, ForeignKey("Users")] public string UserUsername { get; set; }
+        [Key, ForeignKey("Puzzles")] public int PuzzleSeed { get; set; }
         [Key] public int AttemptNum { get; set; }
         public DateTime DateTimeAttempted { get; set; }
         public DateTime DateTimeCompleted { get; set; }

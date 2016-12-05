@@ -100,7 +100,7 @@ namespace SC.SimpleSudoku.Migrations
 
                     b.Property<int>("AverageScore");
 
-                    b.Property<DateTime>("AverageSolvingTime");
+                    b.Property<TimeSpan>("AverageSolvingTime");
 
                     b.Property<string>("CurrentPuzzleData");
 

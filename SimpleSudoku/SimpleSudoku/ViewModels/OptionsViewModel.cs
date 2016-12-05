@@ -25,7 +25,7 @@ namespace SC.SimpleSudoku.ViewModels
             {
                 if (_currentUser.IsMistakeHighlightingOn == value)
                     return;
-                _currentUser.IsMistakeHighlightingOn = value;
+                _currentUser.IsMistakeHighlightingOn = value; 
                 OnPropertyChanged();
             }
         }

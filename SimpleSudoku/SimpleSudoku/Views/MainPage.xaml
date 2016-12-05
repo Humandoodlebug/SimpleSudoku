@@ -5,7 +5,6 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewModels="using:SC.SimpleSudoku.ViewModels"
-    xmlns:views="using:SC.SimpleSudoku.Views"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
     <Page.Resources>
@@ -61,11 +60,11 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
                 <ColumnDefinition Width="Auto" />
-                <ColumnDefinition MinWidth="150" />
+                <ColumnDefinition MinWidth="160" />
             </Grid.ColumnDefinitions>
 
-            <TextBlock Grid.Column="1" Text="Main Menu" HorizontalAlignment="Center" Margin="5,30" FontSize="42" />
-            <Button Content="{Binding CurrentUser.Username}" Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Margin="0,10,10,10"
+            <TextBlock Grid.Column="1" Text="Main Menu" HorizontalAlignment="Center" Margin="0,30" FontSize="42" />
+            <Button Content="{Binding CurrentUser.Username}" Grid.Row="0" Grid.Column="2" Margin="0,10,10,10"
                     FontSize="24"
                     HorizontalAlignment="Right" VerticalAlignment="Center">
                 <Button.Flyout>
@@ -73,30 +72,56 @@
                         <StackPanel MaxWidth="400">
                             <Grid Visibility="{Binding IsSignedIn, Converter={StaticResource InvertBooleanConverter}}">
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition MinWidth="120"/>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition MinWidth="120" />
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="2,2,10,2" Text="Username"/>
-                                <TextBox Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Margin="2" Text="{Binding EnteredUsername, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                                <TextBlock Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="2,2,10,2" Text="Password"/>
-                                <PasswordBox Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Margin="2" Password="{Binding EnteredPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                                
-                                <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Right">
-                                    <TextBlock Text="{Binding LoginErrorMessage}" TextWrapping="WrapWholeWords" Foreground="Red"/>
+                                <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="2,2,10,2"
+                                           Text="Username" />
+                                <TextBox Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Margin="2"
+                                         Text="{Binding EnteredUsername, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                <TextBlock Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="2,2,10,2"
+                                           Text="Password" />
+                                <PasswordBox Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Margin="2"
+                                             Password="{Binding EnteredPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                                <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
+                                            HorizontalAlignment="Right">
+                                    <TextBlock Text="{Binding LoginErrorMessage}" TextWrapping="WrapWholeWords"
+                                               Foreground="Red" />
                                     <StackPanel Orientation="Horizontal">
-                                    <Button Content="Sign In" HorizontalAlignment="Center" Margin="5" Command="{Binding SignInCommand}"/>
-                                    <Button Content="Sign Up" HorizontalAlignment="Center" Margin="5" Command="{Binding SignUpCommand}"/>
+                                        <Button Content="Sign In" HorizontalAlignment="Center" Margin="5"
+                                                Command="{Binding SignInCommand}" />
+                                        <Button Content="Sign Up" HorizontalAlignment="Center" Margin="5"
+                                                Command="{Binding SignUpCommand}" />
                                     </StackPanel>
                                 </StackPanel>
                             </Grid>
                             <Grid Visibility="{Binding IsSignedIn}">
-                                <Button></Button>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="Average Score" HorizontalAlignment="Right" Margin="5" />
+                                    <TextBlock Text="Average Solving Time" HorizontalAlignment="Right" Margin="5" />
+                                    <TextBlock Text="Average Puzzle Difficulty" HorizontalAlignment="Right" Margin="5" />
+                                    <TextBlock Text="# Puzzles Solved" HorizontalAlignment="Right" Margin="5" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="1">
+                                    <TextBlock Text="{Binding CurrentUser.AverageScore}" Margin="5" />
+                                    <TextBlock Text="{Binding CurrentUser.AverageSolvingTimeString}" Margin="5" />
+                                    <TextBlock Text="{Binding CurrentUser.AveragePuzzleDifficulty}" Margin="5" />
+                                    <TextBlock Text="{Binding CurrentUser.NumPuzzlesSolved}" Margin="5" />
+                                </StackPanel>
                             </Grid>
+                            <StackPanel Orientation="Horizontal" Visibility="{Binding IsSignedIn}">
+                                <Button Content="Sign Out" Command="{Binding SignOutCommand}" />
+                            </StackPanel>
                         </StackPanel>
                     </Flyout>
                 </Button.Flyout>
@@ -138,7 +163,7 @@
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10">
                     <TextBlock Text="Leaderboard Visibility" FontSize="18" VerticalAlignment="Center" Margin="0,0,20,0" />
-                    <ToggleSwitch IsOn="{Binding Options.IsLeaderboardVisible, Mode=TwoWay}" />
+                    <ToggleSwitch IsOn="{Binding Options.IsLeaderboardVisible, Mode=TwoWay}" IsEnabled="{Binding IsSignedIn}" />
                 </StackPanel>
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10">

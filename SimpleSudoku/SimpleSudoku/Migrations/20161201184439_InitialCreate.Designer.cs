@@ -8,7 +8,7 @@ using SC.SimpleSudoku;
 namespace SC.SimpleSudoku.Migrations
 {
     [DbContext(typeof(SudokuDataContext))]
-    [Migration("20161124155932_InitialCreate")]
+    [Migration("20161201184439_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -101,7 +101,7 @@ namespace SC.SimpleSudoku.Migrations
 
                     b.Property<int>("AverageScore");
 
-                    b.Property<DateTime>("AverageSolvingTime");
+                    b.Property<TimeSpan>("AverageSolvingTime");
 
                     b.Property<string>("CurrentPuzzleData");
 

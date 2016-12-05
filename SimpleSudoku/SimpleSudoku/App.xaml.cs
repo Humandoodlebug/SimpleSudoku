@@ -16,7 +16,7 @@ namespace SC.SimpleSudoku
     /// </summary>
     public sealed partial class App : Application
     {
-        public static SudokuDataContext Database { get; set; }
+        public static SudokuDataContext Database { get; private set; }
 
         /// <summary>
         ///     Initializes the singleton application object.  This is the first line of authored code
@@ -58,6 +58,7 @@ namespace SC.SimpleSudoku
                 Database.SaveChangesAsync();
             }
 #endif
+            Database.Dispose();
         }
 
         /// <summary>
@@ -121,8 +122,6 @@ namespace SC.SimpleSudoku
         {
             var deferral = e.SuspendingOperation.GetDeferral();
             //TODO: Save application state and stop any background activity
-            Database.SaveChanges();
-            Database.Dispose();
             deferral.Complete();
         }
     }

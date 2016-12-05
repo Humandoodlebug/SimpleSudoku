@@ -1,11 +1,11 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
+using Windows.ApplicationModel;
+using Windows.UI.Xaml;
 using SC.SimpleSudoku.Model;
-using static SC.SimpleSudoku.App;
 
 // ReSharper disable ExplicitCallerInfoArgument
 
@@ -13,22 +13,64 @@ namespace SC.SimpleSudoku.ViewModels
 {
     internal sealed class MainViewModel : INotifyPropertyChanged
     {
-        private NavigationState _currentNavState = new NavigationState();
-
-        private UserViewModel _currentUser = new UserViewModel(new User
+        private static readonly User DefaultUser = new User
         {
             Username = "Sign in",
             IsMistakeHighlightingOn = true,
             IsPuzzleTimerVisible = true,
             IsLeaderboardVisible = false
-        });
+        };
 
-        private OptionsViewModel _options = new OptionsViewModel(new User() /*TODO: Pass in the currently signed in user.*/);
+        private NavigationState _currentNavState = new NavigationState();
+
+        private UserViewModel _currentUser = new UserViewModel(DefaultUser);
+
         private bool _isSignedIn;
         private string _loginErrorMessage;
 
-        public string EnteredUsername { get; set; }
-        public string EnteredPassword { get; set; }
+        private OptionsViewModel _options = new OptionsViewModel(DefaultUser
+            /*TODO: Pass in the currently signed in user.*/);
+
+        private string _enteredUsername;
+        private string _enteredPassword;
+
+        public MainViewModel()
+        {
+#if DEBUG
+            if (DesignMode.DesignModeEnabled)
+                return;
+#endif
+            Database = new SudokuDataContext();
+            Application.Current.Suspending += OnSuspending;
+        }
+
+        private SudokuDataContext Database { get; }
+
+        public string EnteredUsername
+        {
+            get { return _enteredUsername; }
+            set
+            {
+                if (value == _enteredUsername)
+                    return;
+                _enteredUsername = value; 
+                OnPropertyChanged();
+                
+            }
+        }
+
+        public string EnteredPassword
+        {
+            get { return _enteredPassword; }
+            set
+            {
+                if (value == _enteredPassword)
+                    return;
+                _enteredPassword = value;
+                OnPropertyChanged();
+                
+            }
+        }
 
         public OptionsViewModel Options
         {
@@ -85,13 +127,6 @@ namespace SC.SimpleSudoku.ViewModels
         public ICommand SignInCommand => new DelegateCommand(obj => SignIn());
         public ICommand SignUpCommand => new DelegateCommand(obj => SignUp());
 
-        private void SignUp()
-        {
-            
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
         public string LoginErrorMessage
         {
             get { return _loginErrorMessage; }
@@ -104,24 +139,70 @@ namespace SC.SimpleSudoku.ViewModels
             }
         }
 
+        public ICommand SignOutCommand => new DelegateCommand(obj => SignOut());
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private void OnSuspending(object o, SuspendingEventArgs e)
+        {
+            var deferral = e.SuspendingOperation.GetDeferral();
+            Database.SaveChanges();
+            Database.Dispose();
+            deferral.Complete();
+        }
+
+        private void SignOut()
+        {
+            IsSignedIn = false;
+            Database.SaveChangesAsync();
+            CurrentUser = new UserViewModel(DefaultUser);
+            Options = new OptionsViewModel(DefaultUser);
+        }
+
+        private async void SignUp()
+        {
+            if ((EnteredUsername.Length < 3) || (EnteredUsername.Length > 20))
+                LoginErrorMessage = "The username must be between 3 and 20 characters.";
+            else if (
+                Database.Users.Any(
+                    x => string.Equals(x.Username, EnteredUsername, StringComparison.CurrentCultureIgnoreCase)))
+                LoginErrorMessage = "Sorry, that username is already taken. Please try something else.";
+            else if (string.IsNullOrEmpty(EnteredPassword) || (EnteredPassword.Length < 6) || (EnteredPassword.Length > 42) ||
+                     !EnteredPassword.Any(char.IsLower) || !EnteredPassword.Any(char.IsUpper) ||
+                     (!EnteredPassword.Any(char.IsDigit) && EnteredPassword.Any(char.IsSymbol)))
+                LoginErrorMessage =
+                    "The password must be between 6 and 42 characters, containing upper case letters, lower case letters and numbers or symbols.";
+            else
+            {
+                var user = new User
+                {
+                    Username = EnteredUsername,
+                    Password = EnteredPassword
+                };
+                Database.Users.Add(user);
+                await Database.SaveChangesAsync();
+                SignIn();
+            }
+        }
+
         private void SignIn()
         {
-                var user = Database.Users.FirstOrDefault(x => string.Equals(x.Username, EnteredUsername, StringComparison.CurrentCultureIgnoreCase));
-                if (user == null)
-                {
-                    LoginErrorMessage = "Sorry, this username/password combination is not recognised, please try again.";
-                    return;
-                }
-                if (user.Password != EnteredPassword)
-                {
+            var user =
+                Database.Users.FirstOrDefault(
+                    x => string.Equals(x.Username, EnteredUsername, StringComparison.CurrentCultureIgnoreCase));
+            if (string.IsNullOrEmpty(EnteredUsername))
+                LoginErrorMessage = "The username field cannot be left blank.";
+            else if ((user == null) || (user.Password != EnteredPassword))
                 LoginErrorMessage = "Sorry, this username/password combination is not recognised, please try again.";
-                return;
-                }
+            else
+            {
                 CurrentUser = new UserViewModel(user);
+                Options = new OptionsViewModel(user);
                 IsSignedIn = true;
-            EnteredUsername = string.Empty;
-            EnteredPassword = string.Empty;
-            LoginErrorMessage = string.Empty;
+                EnteredUsername = string.Empty;
+                EnteredPassword = string.Empty;
+                LoginErrorMessage = string.Empty;
+            }
         }
 
         private void GotoOptions()
@@ -141,7 +222,7 @@ namespace SC.SimpleSudoku.ViewModels
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        internal class NavigationState : INotifyPropertyChanged
+        internal sealed class NavigationState : INotifyPropertyChanged
         {
             public enum View
             {
@@ -205,7 +286,7 @@ namespace SC.SimpleSudoku.ViewModels
                 return true;
             }
 
-            protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+            private void OnPropertyChanged([CallerMemberName] string propertyName = null)
             {
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
             }
