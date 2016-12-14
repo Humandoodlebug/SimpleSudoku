@@ -62,16 +62,16 @@ namespace SC.SimpleSudoku.Migrations
                 name: "OldPasswords",
                 columns: table => new
                 {
-                    UserUsername = table.Column<string>(nullable: false),
+                    Username = table.Column<string>(nullable: false),
                     OldPassword = table.Column<string>(nullable: false),
-                    Username = table.Column<string>(nullable: true)
+                    Username1 = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_OldPasswords", x => new { x.UserUsername, x.OldPassword });
+                    table.PrimaryKey("PK_OldPasswords", x => new { x.Username, x.OldPassword });
                     table.ForeignKey(
-                        name: "FK_OldPasswords_Users_Username",
-                        column: x => x.Username,
+                        name: "FK_OldPasswords_Users_Username1",
+                        column: x => x.Username1,
                         principalTable: "Users",
                         principalColumn: "Username",
                         onDelete: ReferentialAction.Restrict);
@@ -81,7 +81,7 @@ namespace SC.SimpleSudoku.Migrations
                 name: "PuzzleAttempts",
                 columns: table => new
                 {
-                    UserUsername = table.Column<string>(nullable: false),
+                    Username = table.Column<string>(nullable: false),
                     PuzzleSeed = table.Column<int>(nullable: false),
                     AttemptNum = table.Column<int>(nullable: false),
                     DateTimeAttempted = table.Column<DateTime>(nullable: false),
@@ -91,14 +91,14 @@ namespace SC.SimpleSudoku.Migrations
                     PuzzleSeed1 = table.Column<int>(nullable: true),
                     Score = table.Column<int>(nullable: false),
                     SolvingTime = table.Column<TimeSpan>(nullable: false),
-                    Username = table.Column<string>(nullable: true)
+                    Username1 = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_PuzzleAttempts", x => new { x.UserUsername, x.PuzzleSeed, x.AttemptNum });
+                    table.PrimaryKey("PK_PuzzleAttempts", x => new { x.Username, x.PuzzleSeed, x.AttemptNum });
                     table.ForeignKey(
-                        name: "FK_PuzzleAttempts_Users_Username",
-                        column: x => x.Username,
+                        name: "FK_PuzzleAttempts_Users_Username1",
+                        column: x => x.Username1,
                         principalTable: "Users",
                         principalColumn: "Username",
                         onDelete: ReferentialAction.Restrict);
@@ -111,14 +111,14 @@ namespace SC.SimpleSudoku.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_OldPasswords_Username",
+                name: "IX_OldPasswords_Username1",
                 table: "OldPasswords",
-                column: "Username");
+                column: "Username1");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PuzzleAttempts_Username",
+                name: "IX_PuzzleAttempts_Username1",
                 table: "PuzzleAttempts",
-                column: "Username");
+                column: "Username1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PuzzleAttempts_PuzzleSeed1_PuzzleBasePuzzleID",

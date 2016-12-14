@@ -33,15 +33,15 @@ namespace SC.SimpleSudoku.Migrations
 
             modelBuilder.Entity("SC.SimpleSudoku.Old_Password", b =>
                 {
-                    b.Property<string>("UserUsername");
+                    b.Property<string>("Username");
 
                     b.Property<string>("OldPassword");
 
-                    b.Property<string>("Username");
+                    b.Property<string>("Username1");
 
-                    b.HasKey("UserUsername", "OldPassword");
+                    b.HasKey("Username", "OldPassword");
 
-                    b.HasIndex("Username");
+                    b.HasIndex("Username1");
 
                     b.ToTable("OldPasswords");
                 });
@@ -61,7 +61,7 @@ namespace SC.SimpleSudoku.Migrations
 
             modelBuilder.Entity("SC.SimpleSudoku.Puzzle_Attempt", b =>
                 {
-                    b.Property<string>("UserUsername");
+                    b.Property<string>("Username");
 
                     b.Property<int>("PuzzleSeed");
 
@@ -81,11 +81,11 @@ namespace SC.SimpleSudoku.Migrations
 
                     b.Property<TimeSpan>("SolvingTime");
 
-                    b.Property<string>("Username");
+                    b.Property<string>("Username1");
 
-                    b.HasKey("UserUsername", "PuzzleSeed", "AttemptNum");
+                    b.HasKey("Username", "PuzzleSeed", "AttemptNum");
 
-                    b.HasIndex("Username");
+                    b.HasIndex("Username1");
 
                     b.HasIndex("PuzzleSeed1", "PuzzleBasePuzzleID");
 
@@ -127,14 +127,14 @@ namespace SC.SimpleSudoku.Migrations
                 {
                     b.HasOne("SC.SimpleSudoku.User")
                         .WithMany("OldPasswords")
-                        .HasForeignKey("Username");
+                        .HasForeignKey("Username1");
                 });
 
             modelBuilder.Entity("SC.SimpleSudoku.Puzzle_Attempt", b =>
                 {
                     b.HasOne("SC.SimpleSudoku.User")
                         .WithMany("PuzzleAttempts")
-                        .HasForeignKey("Username");
+                        .HasForeignKey("Username1");
 
                     b.HasOne("SC.SimpleSudoku.Puzzle")
                         .WithMany("PuzzleAttempts")

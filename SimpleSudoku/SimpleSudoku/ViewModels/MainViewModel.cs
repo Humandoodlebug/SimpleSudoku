@@ -33,6 +33,8 @@ namespace SC.SimpleSudoku.ViewModels
 
         private string _enteredUsername;
         private string _enteredPassword;
+        private string _changePasswordBox;
+        private string _changePasswordBox2;
 
         public MainViewModel()
         {
@@ -53,9 +55,8 @@ namespace SC.SimpleSudoku.ViewModels
             {
                 if (value == _enteredUsername)
                     return;
-                _enteredUsername = value; 
+                _enteredUsername = value;
                 OnPropertyChanged();
-                
             }
         }
 
@@ -68,7 +69,6 @@ namespace SC.SimpleSudoku.ViewModels
                     return;
                 _enteredPassword = value;
                 OnPropertyChanged();
-                
             }
         }
 
@@ -140,6 +140,44 @@ namespace SC.SimpleSudoku.ViewModels
         }
 
         public ICommand SignOutCommand => new DelegateCommand(obj => SignOut());
+
+        public string ChangePasswordBox
+        {
+            get { return _changePasswordBox; }
+            set
+            {
+                if (value == _changePasswordBox)
+                    return;
+                _changePasswordBox = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string ChangePasswordBox2
+        {
+            get { return _changePasswordBox2; }
+            set
+            {
+                if (value == _changePasswordBox2)
+                    return;
+                _changePasswordBox2 = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public ICommand ChangePasswordCommand => new DelegateCommand(obj => ChangePassword());
+
+        private void ChangePassword()
+        {
+            if (ChangePasswordBox == ChangePasswordBox2 && ChangePasswordBox.Length >= 6 &&
+                ChangePasswordBox.Length <= 42 && ChangePasswordBox.Any(char.IsUpper) &&
+                ChangePasswordBox.Any(char.IsLower) &&
+                (ChangePasswordBox.Any(char.IsDigit) || ChangePasswordBox.Any(char.IsSymbol)))
+            {
+                CurrentUser.Password = ChangePasswordBox;
+                Database.SaveChangesAsync();
+            }
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
 

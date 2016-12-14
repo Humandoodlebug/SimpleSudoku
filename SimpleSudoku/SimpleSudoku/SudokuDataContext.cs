@@ -31,9 +31,9 @@ namespace SC.SimpleSudoku
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Old_Password>().HasKey(x => new {x.UserUsername, x.OldPassword});
+            modelBuilder.Entity<Old_Password>().HasKey(x => new {x.Username, x.OldPassword});
             modelBuilder.Entity<Puzzle>().HasKey(x => new {x.Seed, x.BasePuzzleID});
-            modelBuilder.Entity<Puzzle_Attempt>().HasKey(x => new {x.UserUsername, x.PuzzleSeed, x.AttemptNum});
+            modelBuilder.Entity<Puzzle_Attempt>().HasKey(x => new {x.Username, x.PuzzleSeed, x.AttemptNum});
             modelBuilder.Entity<User>().HasKey(x => x.Username);
             modelBuilder.Entity<Base_Puzzle>().HasKey(x => x.ID);
         }
@@ -60,7 +60,7 @@ namespace SC.SimpleSudoku
 
     public class Old_Password
     {
-        [Key, ForeignKey(nameof(User))] public string UserUsername { get; set; }
+        [Key, ForeignKey(nameof(User))] public string Username { get; set; }
         [Key] public string OldPassword { get; set; }
     }
 
@@ -76,7 +76,7 @@ namespace SC.SimpleSudoku
 
     public class Puzzle_Attempt
     {
-        [Key, ForeignKey("Users")] public string UserUsername { get; set; }
+        [Key, ForeignKey("Users")] public string Username { get; set; }
         [Key, ForeignKey("Puzzles")] public int PuzzleSeed { get; set; }
         [Key] public int AttemptNum { get; set; }
         public DateTime DateTimeAttempted { get; set; }
