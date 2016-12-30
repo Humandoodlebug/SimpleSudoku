@@ -5,6 +5,8 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewModels="using:SC.SimpleSudoku.ViewModels"
+    xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
+    xmlns:core="using:Microsoft.Xaml.Interactions.Core"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
     <Page.Resources>
@@ -15,13 +17,21 @@
     </Page.DataContext>
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center"
                     Visibility="{Binding CurrentNavState.IsPuzzleDifficultyVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
-            <Button Content="Easy" FontSize="28" HorizontalAlignment="Center" />
-            <Button Content="Medium" FontSize="28" HorizontalAlignment="Center" Margin="0,5,0,0" />
-            <Button Content="Hard" FontSize="28" HorizontalAlignment="Center" Margin="0,5,0,0" />
-            <Button Content="Insane" FontSize="28" HorizontalAlignment="Center" Margin="0,5,0,0" />
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Margin="5" Text="Puzzle Seed:" />
+                <TextBox Text="{Binding EnteredSeed, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, Converter={StaticResource NullableIntConverter}}"
+                         PlaceholderText="Random Seed" />
+            </StackPanel>
+            <Button Content="Easy" FontSize="28" HorizontalAlignment="Center" Margin="0,5,0,0"
+                    Command="{Binding ShowPuzzleCommand}" CommandParameter="Easy"/>
+            <Button Content="Normal" FontSize="28" HorizontalAlignment="Center" Margin="0,5,0,0"
+                    Command="{Binding ShowPuzzleCommand}" CommandParameter="Normal" />
+            <Button Content="Hard" FontSize="28" HorizontalAlignment="Center" Margin="0,5,0,0"
+                    Command="{Binding ShowPuzzleCommand}" CommandParameter="Hard" />
+            <Button Content="Insane" FontSize="28" HorizontalAlignment="Center" Margin="0,5,0,0"
+                    Command="{Binding ShowPuzzleCommand}" CommandParameter="Insane" />
         </StackPanel>
 
         <Grid
@@ -39,14 +49,45 @@
                     </StackPanel>
                 </CommandBar.Content>
                 <CommandBar.PrimaryCommands>
+                    <AppBarToggleButton Content="Pencil Mode" IsChecked="{Binding IsInPencilMode}" Width="80" HorizontalContentAlignment="Center"/>
                     <AppBarButton Icon="Help" Label="Hint" />
                     <AppBarButton Icon="View" Label="Reveal" />
                 </CommandBar.PrimaryCommands>
             </CommandBar>
             <TextBlock HorizontalAlignment="Left" Margin="50,50,0,0" Grid.Row="1" TextWrapping="Wrap"
                        Text="Elapsed Time: 00:00:00" FontSize="50" VerticalAlignment="Top" />
-            <ItemsControl Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center"
-                          ItemTemplate="{StaticResource RowTemplate}" />
+            <Grid Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" BorderBrush="Black" BorderThickness="2">
+                <ItemsControl HorizontalAlignment="Center" VerticalAlignment="Center"
+                          ItemTemplate="{StaticResource RowTemplate}" ItemsSource="{Binding Cells}" Background="Black" />
+                <Grid IsHitTestVisible="False">
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <Rectangle Grid.Row="0" Grid.Column="0" Grid.RowSpan="3" Width="2" HorizontalAlignment="Left" VerticalAlignment="Stretch" IsHitTestVisible="False" Fill="Black"/>
+                    <Rectangle Grid.Row="0" Grid.Column="0" Grid.RowSpan="3" Width="2" HorizontalAlignment="Right" VerticalAlignment="Stretch" IsHitTestVisible="False" Fill="Black"/>
+                    <Rectangle Grid.Row="0" Grid.Column="1" Grid.RowSpan="3" Width="2" HorizontalAlignment="Left" VerticalAlignment="Stretch" IsHitTestVisible="False" Fill="Black"/>
+                    <Rectangle Grid.Row="0" Grid.Column="1" Grid.RowSpan="3" Width="2" HorizontalAlignment="Right" VerticalAlignment="Stretch" IsHitTestVisible="False" Fill="Black"/>
+                    <Rectangle Grid.Row="0" Grid.Column="2" Grid.RowSpan="3" Width="2" HorizontalAlignment="Left" VerticalAlignment="Stretch" IsHitTestVisible="False" Fill="Black"/>
+                    <Rectangle Grid.Row="0" Grid.Column="2" Grid.RowSpan="3" Width="2" HorizontalAlignment="Right" VerticalAlignment="Stretch" IsHitTestVisible="False" Fill="Black"/>
+
+                    <Rectangle Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Height="2" HorizontalAlignment="Stretch" VerticalAlignment="Top" IsHitTestVisible="False" Fill="Black"/>
+                    <Rectangle Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Height="2" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" IsHitTestVisible="False" Fill="Black"/>
+                    <Rectangle Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Height="2" HorizontalAlignment="Stretch" VerticalAlignment="Top" IsHitTestVisible="False" Fill="Black"/>
+                    <Rectangle Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Height="2" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" IsHitTestVisible="False" Fill="Black"/>
+                    <Rectangle Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Height="2" HorizontalAlignment="Stretch" VerticalAlignment="Top" IsHitTestVisible="False" Fill="Black"/>
+                    <Rectangle Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Height="2" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" IsHitTestVisible="False" Fill="Black"/>
+                </Grid>
+            </Grid>
+
             <ContentControl Grid.Row="2" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
                             Margin="10,20" ContentTemplate="{StaticResource PuzzleTouchEntryPanel}" />
         </Grid>
@@ -83,11 +124,23 @@
                                 <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="2,2,10,2"
                                            Text="Username" />
                                 <TextBox Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Margin="2"
-                                         Text="{Binding EnteredUsername, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                         Text="{Binding EnteredUsername, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                                    <!--<interactivity:Interaction.Behaviors>
+                                        <core:EventTriggerBehavior EventName="KeyPressed">
+                                            <core:InvokeCommandAction Command="{Binding SignInCommand}"/>
+                                        </core:EventTriggerBehavior>
+                                    </interactivity:Interaction.Behaviors>-->
+                                </TextBox>
                                 <TextBlock Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="2,2,10,2"
                                            Text="Password" />
                                 <PasswordBox Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Margin="2"
-                                             Password="{Binding EnteredPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                             Password="{Binding EnteredPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                                    <!--<interactivity:Interaction.Behaviors>
+                                        <core:EventTriggerBehavior>
+                                            <core:InvokeCommandAction Command="{Binding SignInCommand}"/>
+                                        </core:EventTriggerBehavior>
+                                    </interactivity:Interaction.Behaviors>-->
+                                </PasswordBox>
 
                                 <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
                                             HorizontalAlignment="Right">
@@ -120,34 +173,36 @@
                                 </StackPanel>
                             </Grid>
                             <StackPanel Orientation="Horizontal" Visibility="{Binding IsSignedIn}">
-                                <Button Content="Sign Out" Command="{Binding SignOutCommand}" />
-                                <Button Content="Change Password">
+                                <Button Content="Sign Out" Command="{Binding SignOutCommand}" Margin="5" />
+                                <Button Content="Change Password" Margin="5">
                                     <Button.Flyout>
                                         <Flyout Placement="Bottom">
                                             <Grid>
                                                 <Grid.RowDefinitions>
-                                                    <RowDefinition Height="Auto"/>
-                                                    <RowDefinition Height="Auto"/>
-                                                    <RowDefinition Height="Auto"/>
+                                                    <RowDefinition Height="Auto" />
+                                                    <RowDefinition Height="Auto" />
+                                                    <RowDefinition Height="Auto" />
                                                 </Grid.RowDefinitions>
-                                                
+
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition/>
-                                                    <ColumnDefinition/>
+                                                    <ColumnDefinition />
+                                                    <ColumnDefinition />
                                                 </Grid.ColumnDefinitions>
-                                                
-                                                <TextBlock Grid.Row="0" Grid.Column="0"  Text="New Password" Margin="5" />
+
+                                                <TextBlock Grid.Row="0" Grid.Column="0" Text="New Password" Margin="5" />
                                                 <PasswordBox Grid.Row="0" Grid.Column="1"
-                                                        Password="{Binding ChangePasswordBox, UpdateSourceTrigger=PropertyChanged}"
-                                                        MinWidth="150" Margin="5" />
-                                                
-                                                <TextBlock Grid.Row="1" Grid.Column="0"  Text="Confirm Password" Margin="5" />
+                                                             Password="{Binding ChangePasswordBox, UpdateSourceTrigger=PropertyChanged}"
+                                                             MinWidth="150" Margin="5" />
+
+                                                <TextBlock Grid.Row="1" Grid.Column="0" Text="Confirm Password"
+                                                           Margin="5" />
                                                 <PasswordBox Grid.Row="1" Grid.Column="1"
-                                                        Password="{Binding ChangePasswordBox2, UpdateSourceTrigger=PropertyChanged}"
-                                                        MinWidth="150" Margin="5" />
-                                                
-                                                <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Content="Confirm" HorizontalAlignment="Right" Margin="5"
-                                                            Command="{Binding ChangePasswordCommand}" />
+                                                             Password="{Binding ChangePasswordBox2, UpdateSourceTrigger=PropertyChanged}"
+                                                             MinWidth="150" Margin="5" />
+
+                                                <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
+                                                        Content="Confirm" HorizontalAlignment="Right" Margin="5"
+                                                        Command="{Binding ChangePasswordCommand}" />
                                             </Grid>
                                         </Flyout>
                                     </Button.Flyout>

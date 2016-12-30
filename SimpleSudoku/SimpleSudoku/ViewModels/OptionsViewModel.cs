@@ -9,7 +9,7 @@ using SC.SimpleSudoku.Model;
 
 namespace SC.SimpleSudoku.ViewModels
 {
-    internal class OptionsViewModel : INotifyPropertyChanged
+    class OptionsViewModel : INotifyPropertyChanged
     {
         private readonly User _currentUser;
 

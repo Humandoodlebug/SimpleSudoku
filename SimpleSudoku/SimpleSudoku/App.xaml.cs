@@ -16,19 +16,18 @@ namespace SC.SimpleSudoku
     /// </summary>
     public sealed partial class App : Application
     {
-        public static SudokuDataContext Database { get; private set; }
+        private static SudokuDataContext Database { get; set; }
 
         /// <summary>
         ///     Initializes the singleton application object.  This is the first line of authored code
         ///     executed, and as such is the logical equivalent of main() or WinMain().
         /// </summary>
         public App()
-        {
+        { 
             InitializeComponent();
             Suspending += OnSuspending;
             if (Database == null)
                 Database = new SudokuDataContext();
-
             try
             {
                 Database.Database.Migrate();
@@ -36,6 +35,8 @@ namespace SC.SimpleSudoku
             catch (Exception e)
             {
 #if DEBUG
+                //Handling invalid database when debugging.
+                //Next 6 lines only run when debugging.
                 Debug.WriteLine($"Database Migration error: \"{e}\"");
                 Debug.WriteLine("Deleting the database...");
                 Database.Database.EnsureDeleted();
@@ -43,7 +44,7 @@ namespace SC.SimpleSudoku
                 Database.Database.Migrate();
                 Debug.WriteLine("Migration successful.");
 #else
-                    throw e;
+                    throw e; //This line runs in final release.
 #endif
             }
             //TODO: Add IO and Database exception handling for migrations here
@@ -55,9 +56,13 @@ namespace SC.SimpleSudoku
                     Username = "TestUser",
                     Password = "1234"
                 });
-                Database.SaveChangesAsync();
+            }
+            if (!Database.BasePuzzles.Any())
+            {
+                Database.BasePuzzles.Add(new Base_Puzzle {ID = 0, Difficulty = PuzzleDifficulty.Easy, PuzzleProblemData = "209003718 000700000 000006059 700400000 540000096 000002007 810200000 000001000 356900801", PuzzleSolutionData = "269543718 135798642 478126359 782469135 543817296 691352487 817235964 924681573 356974821"});
             }
 #endif
+            Database.SaveChanges();
             Database.Dispose();
         }
 

@@ -99,6 +99,7 @@
     <Compile Include="Converters\BooleanToVisibilityConverter.cs" />
     <Compile Include="Converters\EnumDescriptionConverter.cs" />
     <Compile Include="Converters\InvertBooleanConverter.cs" />
+    <Compile Include="Converters\NullableIntConverter.cs" />
     <Compile Include="Migrations\20161212105025_InitialCreate.cs" />
     <Compile Include="Migrations\20161212105025_InitialCreate.designer.cs">
       <DependentUpon>20161212105025_InitialCreate.cs</DependentUpon>
@@ -106,6 +107,7 @@
     <Compile Include="Migrations\SudokuDataContextModelSnapshot.cs" />
     <Compile Include="Model\DelegateCommand.cs" />
     <Compile Include="Model\Sudoku.cs" />
+    <Compile Include="ViewModels\CellViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\OptionsViewModel.cs" />
     <Compile Include="ViewModels\UserViewModel.cs" />
@@ -156,10 +158,7 @@
     </SDKReference>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="System.EnterpriseServices, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.1\System.EnterpriseServices.dll</HintPath>
-    </Reference>
+    <Folder Include="Behaviors\" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

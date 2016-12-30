@@ -89,7 +89,7 @@ namespace SC.SimpleSudoku
     public class Base_Puzzle
     {
         [Key] public int ID { get; set; }
-        public int Difficulty { get; set; }
+        public PuzzleDifficulty Difficulty { get; set; }
         public string PuzzleProblemData { get; set; }
         public string PuzzleSolutionData { get; set; }
     }
