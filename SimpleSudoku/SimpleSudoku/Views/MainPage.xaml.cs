@@ -44,6 +44,8 @@ namespace SC.SimpleSudoku.Views
 
         private void SysNavManager_BackRequested(object sender, BackRequestedEventArgs e)
         {
+            if (_dataContext.CurrentNavState.IsSolvingVisible)
+                _dataContext.SavePuzzle();
             if (_dataContext.CurrentNavState.GoBack())
                 e.Handled = true;
         }

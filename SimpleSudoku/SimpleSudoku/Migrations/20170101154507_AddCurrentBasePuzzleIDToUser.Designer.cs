@@ -8,9 +8,10 @@ using SC.SimpleSudoku;
 namespace SC.SimpleSudoku.Migrations
 {
     [DbContext(typeof(SudokuDataContext))]
-    partial class SudokuDataContextModelSnapshot : ModelSnapshot
+    [Migration("20170101154507_AddCurrentBasePuzzleIDToUser")]
+    partial class AddCurrentBasePuzzleIDToUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.0.1");
@@ -107,8 +108,6 @@ namespace SC.SimpleSudoku.Migrations
                     b.Property<string>("CurrentPuzzleData");
 
                     b.Property<int>("CurrentPuzzleSeed");
-
-                    b.Property<TimeSpan>("CurrentSolvingTime");
 
                     b.Property<bool>("IsLeaderboardVisible");
 

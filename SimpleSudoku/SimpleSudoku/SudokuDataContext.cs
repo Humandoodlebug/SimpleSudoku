@@ -55,6 +55,8 @@ namespace SC.SimpleSudoku
         public bool IsPuzzleTimerVisible { get; set; } = true;
         public List<Puzzle_Attempt> PuzzleAttempts { get; set; }
         public List<Old_Password> OldPasswords { get; set; }
+        public int CurrentBasePuzzleID { get; set; }
+        public TimeSpan CurrentSolvingTime { get; set; }
     }
 
 

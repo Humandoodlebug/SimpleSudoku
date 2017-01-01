@@ -5,14 +5,17 @@ namespace SC.SimpleSudoku.Model
 {
     internal class Sudoku
     {
-        public byte[,] ProblemData { get; set; }
+        public Base_Puzzle BasePuzzle { get; }
 
-        public byte[,] SolutionData { get; set; }
+        public byte[,] ProblemData { get; }
+
+        public byte[,] SolutionData { get; }
 
         public int Seed { get; private set; }
 
         public Sudoku(Base_Puzzle basePuzzle, int? seed = null)
         {
+            BasePuzzle = basePuzzle;
             if (seed == null)
                 seed = new Random().Next();
             Seed = seed.Value;
@@ -48,30 +51,24 @@ namespace SC.SimpleSudoku.Model
                 }
 
             for (var i = random.Next(50, 1000); i > 0; i--)
-                switch (random.Next(8))
+                switch (random.Next(6))
                 {
                     case 0:
-                        PuzzleRowTransformation(puzzleData);
-                        break;
-                    case 1:
-                        PuzzleColumnTransformation(puzzleData);
-                        break;
-                    case 2:
                         PuzzleMainDiagTransformation(puzzleData);
                         break;
-                    case 3:
+                    case 1:
                         PuzzleMinorDiagTransformation(puzzleData);
                         break;
-                    case 4:
+                    case 2:
                         PuzzleMinorRowSwap(random, puzzleData);
                         break;
-                    case 5:
+                    case 3:
                         PuzzleMinorColumnSwap(random, puzzleData);
                         break;
-                    case 6:
+                    case 4:
                         PuzzleMajorRowSwap(random, puzzleData);
                         break;
-                    case 7:
+                    case 5:
                         PuzzleMajorColumnSwap(random, puzzleData);
                         break;
                     default: throw new ArgumentOutOfRangeException(null, "The switch statement hasn't handled this value");
@@ -126,16 +123,17 @@ namespace SC.SimpleSudoku.Model
         private void PuzzleMinorRowSwap(Random random, byte[,] puzzleData)
         {
             var r = random.Next(1, 10);
+            var startRow = (r-1)/3*3;
             switch (r % 3)
             {
                 case 0:
-                    SwapRows(puzzleData, r / 3, r / 3 + 1);
+                    SwapRows(puzzleData, startRow, startRow + 1);
                     break;
                 case 1:
-                    SwapRows(puzzleData, r / 3, r / 3 + 2);
+                    SwapRows(puzzleData, startRow, startRow + 2);
                     break;
                 case 2:
-                    SwapRows(puzzleData, r / 3 + 1, r / 3 + 2);
+                    SwapRows(puzzleData, startRow + 1, startRow + 2);
                     break;
             }
         }
@@ -143,16 +141,17 @@ namespace SC.SimpleSudoku.Model
         private void PuzzleMinorColumnSwap(Random random, byte[,] puzzleData)
         {
             var r = random.Next(1, 10);
+            var startColumn = (r - 1)/3*3;
             switch (r % 3)
             {
                 case 0:
-                    SwapColumns(puzzleData, r / 3, r / 3 + 1);
+                    SwapColumns(puzzleData, startColumn, startColumn + 1);
                     break;
                 case 1:
-                    SwapColumns(puzzleData, r / 3, r / 3 + 2);
+                    SwapColumns(puzzleData, startColumn, startColumn + 2);
                     break;
                 case 2:
-                    SwapColumns(puzzleData, r / 3 + 1, r / 3 + 2);
+                    SwapColumns(puzzleData, startColumn + 1, startColumn + 2);
                     break;
             }
         }
@@ -174,21 +173,21 @@ namespace SC.SimpleSudoku.Model
         {
             for (var i = 0; i < 9; i++)
             {
-                for (var j = 0; (i + j) < 8; j++)
+                for (var j = 0; i + j < 8; j++)
                 {
                     var temp = puzzleData[i, j];
-                    puzzleData[i, j] = puzzleData[8 - i, 8 - j];
-                    puzzleData[8 - i, 8 - j] = temp;
+                    puzzleData[i, j] = puzzleData[8 - j, 8 - i];
+                    puzzleData[8 - j, 8 - i] = temp;
                 }
             }
         }
 
-        private void PuzzleRowTransformation(byte[,] puzzleData)
-        {
-            SwapRows(puzzleData, 0, 8);
-            SwapRows(puzzleData, 1, 7);
-            SwapRows(puzzleData, 2, 4);
-        }
+        //private void PuzzleRowTransformation(byte[,] puzzleData)
+        //{
+        //    SwapRows(puzzleData, 0, 8);
+        //    SwapRows(puzzleData, 1, 7);
+        //    SwapRows(puzzleData, 2, 4);
+        //}
 
         private void SwapRows(byte[,] puzzleData, int row1, int row2)
         {
@@ -200,12 +199,12 @@ namespace SC.SimpleSudoku.Model
             }
         }
 
-        private void PuzzleColumnTransformation(byte[,] puzzleData)
-        {
-            SwapRows(puzzleData, 0, 8);
-            SwapRows(puzzleData, 1, 7);
-            SwapRows(puzzleData, 2, 4);
-        }
+        //private void PuzzleColumnTransformation(byte[,] puzzleData)
+        //{
+        //    SwapRows(puzzleData, 0, 8);
+        //    SwapRows(puzzleData, 1, 7);
+        //    SwapRows(puzzleData, 2, 4);
+        //}
 
         private void SwapColumns(byte[,] puzzleData, int column1, int column2)
         {

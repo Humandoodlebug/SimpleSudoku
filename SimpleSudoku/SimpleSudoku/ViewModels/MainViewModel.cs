@@ -4,10 +4,12 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Windows.ApplicationModel;
 using Windows.UI.Xaml;
+using Microsoft.EntityFrameworkCore;
 using SC.SimpleSudoku.Model;
 
 // ReSharper disable ExplicitCallerInfoArgument
@@ -24,6 +26,18 @@ namespace SC.SimpleSudoku.ViewModels
             IsLeaderboardVisible = false
         };
 
+        public bool IsContinuePuzzleButtonEnabled => !string.IsNullOrEmpty(CurrentUser.CurrentPuzzleData);
+
+        public PuzzleTimerViewModel PuzzleTimer
+        {
+            get { return _puzzleTimer; }
+            private set
+            {
+                _puzzleTimer = value;
+                OnPropertyChanged();
+            }
+        }
+
         private Sudoku CurrentPuzzle { get; set; }
 
         private byte[,] CurrentPuzzleData
@@ -34,7 +48,8 @@ namespace SC.SimpleSudoku.ViewModels
                 for (var i = 0; i < data.GetLength(0); i++)
                     for (var j = 0; j < data.GetLength(1); j++)
                     {
-                        if (Cells[i][j].Content != null) data[i, j] = Cells[i][j].Content.Value;
+                        if (Cells[i][j].Content != null)
+                            data[i, j] = Cells[i][j].Content.Value;
                         else data[i,j] = 0;
                     }
                 return data;
@@ -45,7 +60,7 @@ namespace SC.SimpleSudoku.ViewModels
         private string _changePasswordBox;
         private string _changePasswordBox2;
 
-        private NavigationState _currentNavState = new NavigationState();
+        private NavigationState _currentNavState;
 
         private UserViewModel _currentUser = new UserViewModel(DefaultUser);
         private string _enteredPassword;
@@ -61,15 +76,19 @@ namespace SC.SimpleSudoku.ViewModels
         private int _selectedColumn = 0;
         private int _selectedRow = -1;
         private int? _enteredSeed;
+        private PuzzleTimerViewModel _puzzleTimer;
 
         public MainViewModel()
         {
+            CurrentNavState = new NavigationState();
+            CurrentNavState.PropertyChanged += CurrentNavState_PropertyChanged;
 #if DEBUG
             if (DesignMode.DesignModeEnabled)
                 return;
 #endif
             Database = new SudokuDataContext();
             Application.Current.Suspending += OnSuspending;
+            Application.Current.Resuming += OnResuming;
 
             //var cell = new CellViewModel {Content = null};
             //var obscol = new ObservableCollection<CellViewModel> {cell,cell,cell,cell,cell,cell,cell,cell,cell};
@@ -85,6 +104,18 @@ namespace SC.SimpleSudoku.ViewModels
             //    obscol,
             //    obscol
             //};
+        }
+
+        private void CurrentNavState_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(CurrentNavState.CurrentView))
+            {
+                if (CurrentNavState.CurrentView == NavigationState.View.Solving)
+                    PuzzleTimer?.Start();
+                else
+                    PuzzleTimer?.Stop();
+                //TODO: Handle Saving here.
+            }
         }
 
         public ObservableCollection<ObservableCollection<CellViewModel>> Cells
@@ -228,7 +259,7 @@ namespace SC.SimpleSudoku.ViewModels
             }
         }
 
-        public ICommand ShowPuzzleCommand => new DelegateCommand(obj => ShowPuzzle((string)obj));
+        public ICommand ShowPuzzleCommand => new DelegateCommand(obj => GeneratePuzzle((string)obj));
 
         public int? EnteredSeed
         {
@@ -242,7 +273,59 @@ namespace SC.SimpleSudoku.ViewModels
             }
         }
 
-        private void ShowPuzzle(string difficulty)
+        public ICommand GoHomeCommand => new DelegateCommand(obj => GoHome());
+
+        public ICommand ContinuePuzzleCommand => new DelegateCommand(obj => ContinuePuzzle());
+
+        private void GoHome()
+        {
+            CurrentNavState.RecordView();
+            CurrentNavState.CurrentView = NavigationState.View.MainMenu;
+            SavePuzzle();
+        }
+
+        private byte[,] LoadPuzzleBytes(string puzzleString)
+        {
+            var puzzleStrings = puzzleString.Split(' ');
+            var puzzleBytes = new byte[9, 9];
+            var n = 0;
+            for (var i = 0; i < 9; i++)
+            {
+                for (var j = 0; j < 9; j++)
+                {
+                    puzzleBytes[i, j] = byte.Parse(puzzleStrings[i][j].ToString());
+                    n++;
+                }
+            }
+            return puzzleBytes;
+        }
+
+        private void ContinuePuzzle()
+        {
+            CurrentPuzzle = new Sudoku(Database.BasePuzzles.First(x => x.ID == CurrentUser.CurrentBasePuzzleID), CurrentUser.CurrentPuzzleSeed);
+            var puzzleData = LoadPuzzleBytes(CurrentUser.CurrentPuzzleData);
+            Cells = new ObservableCollection<ObservableCollection<CellViewModel>>();
+            for (var i = 0; i < 9; i++)
+            {
+                var row = new ObservableCollection<CellViewModel>();
+                for (var j = 0; j < 9; j++)
+                {
+                    byte? content = puzzleData[i, j];
+                    if (content == 0)
+                        content = null;
+                    row.Add(new CellViewModel(Options, i, j, CellSelectedHandler, content));
+                }
+                Cells.Add(row);
+            }
+            PuzzleTimer = new PuzzleTimerViewModel(CurrentUser.CurrentUser)
+            {
+                CurrenTimeSpan = CurrentUser.CurrentSolvingTime
+            };
+            CurrentNavState.RecordView();
+            CurrentNavState.CurrentView = NavigationState.View.Solving;
+        }
+
+        private void GeneratePuzzle(string difficulty)
         {
             Base_Puzzle[] basePuzzles;
             switch (difficulty)
@@ -275,6 +358,13 @@ namespace SC.SimpleSudoku.ViewModels
                 });
                 Database.SaveChanges();
             }
+            PuzzleTimer = new PuzzleTimerViewModel(CurrentUser.CurrentUser);
+            DisplayPuzzle();
+            PuzzleTimer.Start();
+        }
+
+        private void DisplayPuzzle()
+        {
             Cells = new ObservableCollection<ObservableCollection<CellViewModel>>();
             for (var i = 0; i < 9; i++)
             {
@@ -318,13 +408,42 @@ namespace SC.SimpleSudoku.ViewModels
             }
         }
 
+        public void SavePuzzle()
+        {
+            var stringBuilder = new StringBuilder();
+            for (var i = 0; i < 9; i++)
+            {
+                for (var j = 0; j < 9; j++)
+                {
+                    stringBuilder.Append(CurrentPuzzleData[i, j]);
+                }
+                if (i < 8)
+                    stringBuilder.Append(' ');
+            }
+            CurrentUser.CurrentPuzzleSeed = CurrentPuzzle.Seed;
+            CurrentUser.CurrentBasePuzzleID = CurrentPuzzle.BasePuzzle.ID;
+            CurrentUser.CurrentPuzzleData = stringBuilder.ToString();
+            CurrentUser.CurrentSolvingTime = PuzzleTimer.CurrenTimeSpan;
+            Database.SaveChanges();
+            OnPropertyChanged(nameof(IsContinuePuzzleButtonEnabled));
+        }
+
+        //The Universal Windows Platform uses a 'Suspend API', meaning the app is suspended when minimized, or before closing. This method is called whenever that happens. 
         private void OnSuspending(object o, SuspendingEventArgs e)
         {
-            //TODO: Save current puzzle
-            var deferral = e.SuspendingOperation.GetDeferral();
+            var deferral = e.SuspendingOperation.GetDeferral(); //Requests that the app suspension operation be delayed.
+            if (CurrentNavState.CurrentView == NavigationState.View.Solving)
+                SavePuzzle(); //Saves puzzle if user is currently solving one.
             Database.SaveChanges();
-            Database.Dispose();
+            Database.Database.CloseConnection(); //Closes the connection to the database.
             deferral.Complete();
+        }
+
+        //This method is called when the app is restored after being suspended.
+        private void OnResuming(object sender, object e)
+        {
+            //Re-opens the connection to the database.
+            Database.Database.OpenConnection();
         }
 
         private void SignOut()
@@ -333,6 +452,7 @@ namespace SC.SimpleSudoku.ViewModels
             Database.SaveChangesAsync();
             CurrentUser = new UserViewModel(DefaultUser);
             Options = new OptionsViewModel(DefaultUser);
+            OnPropertyChanged(nameof(IsContinuePuzzleButtonEnabled));
         }
 
         private async void SignUp()
@@ -379,6 +499,7 @@ namespace SC.SimpleSudoku.ViewModels
                 EnteredPassword = string.Empty;
                 LoginErrorMessage = string.Empty;
             }
+            OnPropertyChanged(nameof(IsContinuePuzzleButtonEnabled));
         }
 
         private void GotoOptions()

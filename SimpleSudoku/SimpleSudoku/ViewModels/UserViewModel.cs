@@ -11,47 +11,47 @@ namespace SC.SimpleSudoku.ViewModels
 {
     internal class UserViewModel : INotifyPropertyChanged
     {
-        private readonly User _currentUser;
+        public User CurrentUser { get; }
 
         public UserViewModel(User currentUser)
         {
-            _currentUser = currentUser;
+            CurrentUser = currentUser;
         }
 
         public string Username
         {
-            get { return _currentUser.Username; }
+            get { return CurrentUser.Username; }
             set
             {
-                _currentUser.Username = value;
+                CurrentUser.Username = value;
                 OnPropertyChanged();
             }
         }
 
         public string Password
         {
-            get { return _currentUser.Password; }
+            get { return CurrentUser.Password; }
             set
             {
-                _currentUser.Password = value;
+                CurrentUser.Password = value;
                 OnPropertyChanged();
             }
         }
         public int NumPuzzlesSolved
         {
-            get { return _currentUser.NumPuzzlesSolved; }
+            get { return CurrentUser.NumPuzzlesSolved; }
             set
             {
-                _currentUser.NumPuzzlesSolved = value;
+                CurrentUser.NumPuzzlesSolved = value;
                 OnPropertyChanged();
             }
         }
         public TimeSpan AverageSolvingTime
         {
-            get { return _currentUser.AverageSolvingTime; }
+            get { return CurrentUser.AverageSolvingTime; }
             set
             {
-                _currentUser.AverageSolvingTime = value;
+                CurrentUser.AverageSolvingTime = value;
                 OnPropertyChanged();
                 // ReSharper disable once ExplicitCallerInfoArgument
                 OnPropertyChanged(nameof(AverageSolvingTimeString));
@@ -62,91 +62,85 @@ namespace SC.SimpleSudoku.ViewModels
 
         public int AveragePuzzleDifficulty
         {
-            get { return _currentUser.AveragePuzzleDifficulty; }
+            get { return CurrentUser.AveragePuzzleDifficulty; }
             set
             {
-                _currentUser.AveragePuzzleDifficulty = value;
+                CurrentUser.AveragePuzzleDifficulty = value;
                 OnPropertyChanged();
             }
         }
         public int AverageScore
         {
-            get { return _currentUser.AverageScore; }
+            get { return CurrentUser.AverageScore; }
             set
             {
-                _currentUser.AverageScore = value;
+                CurrentUser.AverageScore = value;
                 OnPropertyChanged();
             }
         }
         public long TotalScore
         {
-            get { return _currentUser.TotalScore; }
+            get { return CurrentUser.TotalScore; }
             set
             {
-                _currentUser.TotalScore = value;
+                CurrentUser.TotalScore = value;
                 OnPropertyChanged();
             }
         }
         public int CurrentPuzzleSeed
         {
-            get { return _currentUser.CurrentPuzzleSeed; }
+            get { return CurrentUser.CurrentPuzzleSeed; }
             set
             {
-                _currentUser.CurrentPuzzleSeed = value;
+                CurrentUser.CurrentPuzzleSeed = value;
                 OnPropertyChanged();
             }
         }
         public string CurrentPuzzleData
         {
-            get { return _currentUser.CurrentPuzzleData; }
+            get { return CurrentUser.CurrentPuzzleData; }
             set
             {
-                _currentUser.CurrentPuzzleData = value;
-                OnPropertyChanged();
-            }
-        }
-        public bool IsMistakeHighlightingOn
-        {
-            get { return _currentUser.IsMistakeHighlightingOn; }
-            set
-            {
-                _currentUser.IsMistakeHighlightingOn = value;
-                OnPropertyChanged();
-            }
-        }
-        public bool IsLeaderboardVisible
-        {
-            get { return _currentUser.IsLeaderboardVisible; }
-            set
-            {
-                _currentUser.IsLeaderboardVisible = value;
-                OnPropertyChanged();
-            }
-        }
-        public bool IsPuzzleTimerVisible
-        {
-            get { return _currentUser.IsPuzzleTimerVisible; }
-            set
-            {
-                _currentUser.IsPuzzleTimerVisible = value;
+                CurrentUser.CurrentPuzzleData = value;
                 OnPropertyChanged();
             }
         }
         public List<Puzzle_Attempt> PuzzleAttempts
         {
-            get { return _currentUser.PuzzleAttempts; }
+            get { return CurrentUser.PuzzleAttempts; }
             set
             {
-                _currentUser.PuzzleAttempts = value;
+                CurrentUser.PuzzleAttempts = value;
                 OnPropertyChanged();
             }
         }
         public List<Old_Password> OldPasswords
         {
-            get { return _currentUser.OldPasswords; }
+            get { return CurrentUser.OldPasswords; }
             set
             {
-                _currentUser.OldPasswords = value;
+                CurrentUser.OldPasswords = value;
+                OnPropertyChanged();
+            }
+        }
+
+        // ReSharper disable once InconsistentNaming
+        public int CurrentBasePuzzleID
+        {
+            get { return CurrentUser.CurrentBasePuzzleID; }
+            set
+            {
+                CurrentUser.CurrentBasePuzzleID = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public TimeSpan CurrentSolvingTime
+        {
+            get { return CurrentUser.CurrentSolvingTime; }
+            set
+            {
+                CurrentUser.CurrentSolvingTime = value;
                 OnPropertyChanged();
             }
         }

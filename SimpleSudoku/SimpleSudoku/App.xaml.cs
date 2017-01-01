@@ -16,14 +16,12 @@ namespace SC.SimpleSudoku
     /// </summary>
     public sealed partial class App : Application
     {
-        private static SudokuDataContext Database { get; set; }
-
         /// <summary>
         ///     Initializes the singleton application object.  This is the first line of authored code
         ///     executed, and as such is the logical equivalent of main() or WinMain().
         /// </summary>
         public App()
-        { 
+        {
             InitializeComponent();
             Suspending += OnSuspending;
             if (Database == null)
@@ -50,21 +48,52 @@ namespace SC.SimpleSudoku
             //TODO: Add IO and Database exception handling for migrations here
 #if DEBUG
             if (!Database.Users.Any(x => x.Username == "TestUser"))
-            {
                 Database.Users.Add(new User
                 {
                     Username = "TestUser",
                     Password = "1234"
                 });
-            }
             if (!Database.BasePuzzles.Any())
             {
-                Database.BasePuzzles.Add(new Base_Puzzle {ID = 0, Difficulty = PuzzleDifficulty.Easy, PuzzleProblemData = "209003718 000700000 000006059 700400000 540000096 000002007 810200000 000001000 356900801", PuzzleSolutionData = "269543718 135798642 478126359 782469135 543817296 691352487 817235964 924681573 356974821"});
+                Database.BasePuzzles.Add(new Base_Puzzle
+                {
+                    Difficulty = PuzzleDifficulty.Easy,
+                    PuzzleProblemData =
+                        "209003718 000700000 000006059 700400000 540000096 000002007 810200000 000001000 356900801",
+                    PuzzleSolutionData =
+                        "269543718 135798642 478126359 782469135 543817296 691352487 817235964 924681573 356974821"
+                });
+                Database.BasePuzzles.Add(new Base_Puzzle
+                {
+                    Difficulty = PuzzleDifficulty.Medium,
+                    PuzzleProblemData =
+                        "100009060 230074010 090000000 020030000 801090603 000010020 000000030 060180092 070600004",
+                    PuzzleSolutionData =
+                        "184529367 236874915 795361248 629738451 841295673 357416829 518942736 463187592 972653184"
+                });
+                Database.BasePuzzles.Add(new Base_Puzzle
+                {
+                    Difficulty = PuzzleDifficulty.Hard,
+                    PuzzleProblemData =
+                        "030000400 100700603 400050097 000007100 000402000 009800000 360070001 504003009 008000070",
+                    PuzzleSolutionData =
+                        "837269415 195748623 426351897 253697148 781432956 649815732 362974581 574183269 918526374"
+                });
+                Database.BasePuzzles.Add(new Base_Puzzle
+                {
+                    Difficulty = PuzzleDifficulty.Insane,
+                    PuzzleProblemData =
+                        "000700080 705000000 090600705 000042610 000561000 013980000 201009030 000000902 040005000",
+                    PuzzleSolutionData =
+                        "126754389 735298461 894613725 958342617 472561893 613987254 261479538 587136942 349825176"
+                });
             }
 #endif
             Database.SaveChanges();
             Database.Dispose();
         }
+
+        private static SudokuDataContext Database { get; set; }
 
         /// <summary>
         ///     Invoked when the application is launched normally by the end user.  Other entry points
@@ -128,6 +157,11 @@ namespace SC.SimpleSudoku
             var deferral = e.SuspendingOperation.GetDeferral();
             //TODO: Save application state and stop any background activity
             deferral.Complete();
+        }
+
+        private void OnResuming(object sender, object e)
+        {
+            
         }
     }
 }

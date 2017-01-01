@@ -104,12 +104,21 @@
     <Compile Include="Migrations\20161212105025_InitialCreate.designer.cs">
       <DependentUpon>20161212105025_InitialCreate.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\20170101154507_AddCurrentBasePuzzleIDToUser.cs" />
+    <Compile Include="Migrations\20170101154507_AddCurrentBasePuzzleIDToUser.designer.cs">
+      <DependentUpon>20170101154507_AddCurrentBasePuzzleIDToUser.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\20170101180536_AddCurrentSolvingTimeToUser.cs" />
+    <Compile Include="Migrations\20170101180536_AddCurrentSolvingTimeToUser.designer.cs">
+      <DependentUpon>20170101180536_AddCurrentSolvingTimeToUser.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\SudokuDataContextModelSnapshot.cs" />
     <Compile Include="Model\DelegateCommand.cs" />
     <Compile Include="Model\Sudoku.cs" />
     <Compile Include="ViewModels\CellViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\OptionsViewModel.cs" />
+    <Compile Include="ViewModels\PuzzleTimerViewModel.cs" />
     <Compile Include="ViewModels\UserViewModel.cs" />
     <Compile Include="ViewModels\ValidationError.cs" />
     <Compile Include="Views\MainPage.xaml.cs">

@@ -1,4 +1,5 @@
-﻿<Page
+﻿<!--The main page. All UI elements are routed through here.-->
+<Page
     x:Class="SC.SimpleSudoku.Views.MainPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -38,25 +39,26 @@
             Visibility="{Binding CurrentNavState.IsSolvingVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto"/>
                 <RowDefinition />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
             <CommandBar Name="AppCommandBar" ClosedDisplayMode="Compact" HorizontalContentAlignment="Left">
                 <CommandBar.Content>
                     <StackPanel>
-                        <AppBarButton Icon="Home" Label="Main Menu" Margin="15,0"
+                        <AppBarButton Icon="Home" Label="Main Menu" Margin="15,0" Command="{Binding GoHomeCommand}"
                                       IsCompact="{Binding IsOpen,ElementName=AppCommandBar,Converter={StaticResource InvertBooleanConverter}}" />
                     </StackPanel>
                 </CommandBar.Content>
                 <CommandBar.PrimaryCommands>
-                    <AppBarToggleButton Content="Pencil Mode" IsChecked="{Binding IsInPencilMode}" Width="80" HorizontalContentAlignment="Center"/>
+                    <AppBarToggleButton Content="Pencil Mode" IsChecked="{Binding IsInPencilMode}" Width="100" HorizontalContentAlignment="Center"/>
                     <AppBarButton Icon="Help" Label="Hint" />
                     <AppBarButton Icon="View" Label="Reveal" />
                 </CommandBar.PrimaryCommands>
             </CommandBar>
             <TextBlock HorizontalAlignment="Left" Margin="50,50,0,0" Grid.Row="1" TextWrapping="Wrap"
-                       Text="Elapsed Time: 00:00:00" FontSize="50" VerticalAlignment="Top" />
-            <Grid Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" BorderBrush="Black" BorderThickness="2">
+                       Text="{Binding PuzzleTimer.TimerString}" FontSize="50" VerticalAlignment="Top" Visibility="{Binding Options.IsPuzzleTimerVisible, Converter={StaticResource BooleanToVisibilityConverter}}" />
+            <Grid Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center" BorderBrush="Black" BorderThickness="2">
                 <ItemsControl HorizontalAlignment="Center" VerticalAlignment="Center"
                           ItemTemplate="{StaticResource RowTemplate}" ItemsSource="{Binding Cells}" Background="Black" />
                 <Grid IsHitTestVisible="False">
@@ -72,13 +74,14 @@
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
                     
+                    <!--Rectangles to thicken lines in grid, creating 3 by 3 boxes.-->
                     <Rectangle Grid.Row="0" Grid.Column="0" Grid.RowSpan="3" Width="2" HorizontalAlignment="Left" VerticalAlignment="Stretch" IsHitTestVisible="False" Fill="Black"/>
                     <Rectangle Grid.Row="0" Grid.Column="0" Grid.RowSpan="3" Width="2" HorizontalAlignment="Right" VerticalAlignment="Stretch" IsHitTestVisible="False" Fill="Black"/>
                     <Rectangle Grid.Row="0" Grid.Column="1" Grid.RowSpan="3" Width="2" HorizontalAlignment="Left" VerticalAlignment="Stretch" IsHitTestVisible="False" Fill="Black"/>
                     <Rectangle Grid.Row="0" Grid.Column="1" Grid.RowSpan="3" Width="2" HorizontalAlignment="Right" VerticalAlignment="Stretch" IsHitTestVisible="False" Fill="Black"/>
                     <Rectangle Grid.Row="0" Grid.Column="2" Grid.RowSpan="3" Width="2" HorizontalAlignment="Left" VerticalAlignment="Stretch" IsHitTestVisible="False" Fill="Black"/>
                     <Rectangle Grid.Row="0" Grid.Column="2" Grid.RowSpan="3" Width="2" HorizontalAlignment="Right" VerticalAlignment="Stretch" IsHitTestVisible="False" Fill="Black"/>
-
+                    
                     <Rectangle Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Height="2" HorizontalAlignment="Stretch" VerticalAlignment="Top" IsHitTestVisible="False" Fill="Black"/>
                     <Rectangle Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Height="2" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" IsHitTestVisible="False" Fill="Black"/>
                     <Rectangle Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Height="2" HorizontalAlignment="Stretch" VerticalAlignment="Top" IsHitTestVisible="False" Fill="Black"/>
@@ -88,7 +91,7 @@
                 </Grid>
             </Grid>
 
-            <ContentControl Grid.Row="2" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+            <ContentControl Grid.Row="3" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
                             Margin="10,20" ContentTemplate="{StaticResource PuzzleTouchEntryPanel}" />
         </Grid>
 
@@ -216,10 +219,10 @@
 
             <StackPanel Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Stretch" Grid.Row="1"
                         Grid.ColumnSpan="3">
-                <Button Content="Continue Puzzle" HorizontalAlignment="Center" Margin="0,5" FontSize="28" />
+                <Button Content="Continue Puzzle" HorizontalAlignment="Center" Margin="0,5" FontSize="28" IsEnabled="{Binding IsContinuePuzzleButtonEnabled}" Command="{Binding ContinuePuzzleCommand}"/>
                 <Button Content="New Puzzle" HorizontalAlignment="Center" Margin="0,5" FontSize="28"
                         Command="{Binding NewPuzzleCommand}" />
-                <Button Content="Leaderboard" HorizontalAlignment="Center" Margin="0,5" FontSize="28" />
+                <Button Content="Leaderboard" HorizontalAlignment="Center" Margin="0,5" FontSize="28" IsEnabled="False"/>
                 <Button Content="Options" HorizontalAlignment="Center" Margin="0,5" FontSize="28"
                         Command="{Binding OptionsCommand}" />
             </StackPanel>
