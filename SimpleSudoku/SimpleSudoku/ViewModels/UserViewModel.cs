@@ -60,7 +60,7 @@ namespace SC.SimpleSudoku.ViewModels
 
         public string AverageSolvingTimeString => AverageSolvingTime.ToString("g");
 
-        public int AveragePuzzleDifficulty
+        public double AveragePuzzleDifficulty
         {
             get { return CurrentUser.AveragePuzzleDifficulty; }
             set
@@ -69,7 +69,7 @@ namespace SC.SimpleSudoku.ViewModels
                 OnPropertyChanged();
             }
         }
-        public int AverageScore
+        public double AverageScore
         {
             get { return CurrentUser.AverageScore; }
             set
@@ -105,7 +105,7 @@ namespace SC.SimpleSudoku.ViewModels
                 OnPropertyChanged();
             }
         }
-        public List<Puzzle_Attempt> PuzzleAttempts
+        public ICollection<Puzzle_Attempt> PuzzleAttempts
         {
             get { return CurrentUser.PuzzleAttempts; }
             set
@@ -114,7 +114,7 @@ namespace SC.SimpleSudoku.ViewModels
                 OnPropertyChanged();
             }
         }
-        public List<Old_Password> OldPasswords
+        public ICollection<Old_Password> OldPasswords
         {
             get { return CurrentUser.OldPasswords; }
             set
@@ -127,10 +127,10 @@ namespace SC.SimpleSudoku.ViewModels
         // ReSharper disable once InconsistentNaming
         public int CurrentBasePuzzleID
         {
-            get { return CurrentUser.CurrentBasePuzzleID; }
+            get { return CurrentUser.CurrentBasePuzzleId; }
             set
             {
-                CurrentUser.CurrentBasePuzzleID = value;
+                CurrentUser.CurrentBasePuzzleId = value;
                 OnPropertyChanged();
             }
         }

@@ -1,19 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
+﻿using System.ComponentModel;
+using Windows.System;
 using Windows.UI.Core;
-using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
 using SC.SimpleSudoku.ViewModels;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
@@ -48,6 +37,19 @@ namespace SC.SimpleSudoku.Views
                 _dataContext.SavePuzzle();
             if (_dataContext.CurrentNavState.GoBack())
                 e.Handled = true;
+        }
+
+        private void MainPage_OnKeyDown(object sender, KeyRoutedEventArgs e)
+        {
+            if (_dataContext.CurrentNavState.IsSolvingVisible)
+            {
+                if ((int) e.Key > 48 && (int) e.Key < 58)
+                    _dataContext.SetValue((byte) ((int) e.Key - 48));
+                else if (e.Key >= VirtualKey.Left && e.Key <= VirtualKey.Down)
+                {
+                    _dataContext.MoveSelection((int) e.Key - (int) VirtualKey.Left);
+                }
+            }
         }
     }
 }

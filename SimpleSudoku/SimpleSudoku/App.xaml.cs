@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
+using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 using Microsoft.EntityFrameworkCore;
+using SC.SimpleSudoku.Model;
 using SC.SimpleSudoku.Views;
 
 namespace SC.SimpleSudoku
@@ -30,22 +33,28 @@ namespace SC.SimpleSudoku
             {
                 Database.Database.Migrate();
             }
+#if DEBUG
             catch (Exception e)
             {
-#if DEBUG
                 //Handling invalid database when debugging.
-                //Next 6 lines only run when debugging.
+                //Next 6 lines only run if there is an Exception accessing the database when debugging.
                 Debug.WriteLine($"Database Migration error: \"{e}\"");
                 Debug.WriteLine("Deleting the database...");
                 Database.Database.EnsureDeleted();
                 Debug.WriteLine("Database deleted. Retrying migration...");
                 Database.Database.Migrate();
                 Debug.WriteLine("Migration successful.");
-#else
-                    throw e; //This line runs in final release.
-#endif
             }
-            //TODO: Add IO and Database exception handling for migrations here
+#else
+            //These lines run if there is an Exception accessing the database in the final release. They show the error message and close the app when the user clicks 'ok'.
+            catch(IOException e)
+            {
+                var messageDialog = new MessageDialog($"There has been an error accessing the database: {e.Message}\n\n\r The app will now close.",
+                    "Database Error");
+                messageDialog.Commands.Add(new UICommand("Ok", command => Current.Exit()));
+            }
+#endif
+
 #if DEBUG
             if (!Database.Users.Any(x => x.Username == "TestUser"))
                 Database.Users.Add(new User
@@ -53,9 +62,12 @@ namespace SC.SimpleSudoku
                     Username = "TestUser",
                     Password = "1234"
                 });
+#endif
+            if (!Database.Users.Any(x => x.Username == "Sign in"))
+                Database.Users.Add(new User {Username = "Sign in", Password = null});
             if (!Database.BasePuzzles.Any())
             {
-                Database.BasePuzzles.Add(new Base_Puzzle
+                Database.BasePuzzles.Add(new BasePuzzle
                 {
                     Difficulty = PuzzleDifficulty.Easy,
                     PuzzleProblemData =
@@ -63,7 +75,7 @@ namespace SC.SimpleSudoku
                     PuzzleSolutionData =
                         "269543718 135798642 478126359 782469135 543817296 691352487 817235964 924681573 356974821"
                 });
-                Database.BasePuzzles.Add(new Base_Puzzle
+                Database.BasePuzzles.Add(new BasePuzzle
                 {
                     Difficulty = PuzzleDifficulty.Medium,
                     PuzzleProblemData =
@@ -71,7 +83,7 @@ namespace SC.SimpleSudoku
                     PuzzleSolutionData =
                         "184529367 236874915 795361248 629738451 841295673 357416829 518942736 463187592 972653184"
                 });
-                Database.BasePuzzles.Add(new Base_Puzzle
+                Database.BasePuzzles.Add(new BasePuzzle
                 {
                     Difficulty = PuzzleDifficulty.Hard,
                     PuzzleProblemData =
@@ -79,7 +91,7 @@ namespace SC.SimpleSudoku
                     PuzzleSolutionData =
                         "837269415 195748623 426351897 253697148 781432956 649815732 362974581 574183269 918526374"
                 });
-                Database.BasePuzzles.Add(new Base_Puzzle
+                Database.BasePuzzles.Add(new BasePuzzle
                 {
                     Difficulty = PuzzleDifficulty.Insane,
                     PuzzleProblemData =
@@ -88,7 +100,7 @@ namespace SC.SimpleSudoku
                         "126754389 735298461 894613725 958342617 472561893 613987254 261479538 587136942 349825176"
                 });
             }
-#endif
+
             Database.SaveChanges();
             Database.Dispose();
         }
@@ -117,10 +129,11 @@ namespace SC.SimpleSudoku
 
                 rootFrame.NavigationFailed += OnNavigationFailed;
 
-                if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
-                {
-                    //TODO: Load state from previously suspended application
-                }
+                //We don't need to do this here, since we do it in the MainViewModel constructor:
+                //if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
+                //{
+                //    //TO DO: Load state from previously suspended application
+                //}
 
                 // Place the frame in the current Window
                 Window.Current.Content = rootFrame;
@@ -155,13 +168,8 @@ namespace SC.SimpleSudoku
         private void OnSuspending(object sender, SuspendingEventArgs e)
         {
             var deferral = e.SuspendingOperation.GetDeferral();
-            //TODO: Save application state and stop any background activity
+            //Save application state and stop any background activity. This is actually done in the OnSuspending method in the MainViewModel class.
             deferral.Complete();
-        }
-
-        private void OnResuming(object sender, object e)
-        {
-            
         }
     }
 }

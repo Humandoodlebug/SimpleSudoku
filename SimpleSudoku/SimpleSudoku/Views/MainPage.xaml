@@ -1,4 +1,4 @@
-﻿<!--The main page. All UI elements are routed through here.-->
+﻿<!--The main page. This is where the User Interface layout and some basic behaviour is specified. using a Model-View-View Model pattern, I have tried to avoid code-behind, so you'll find most of the code in models loke the 'Sudoku' class, and view-models like the 'MainViewModel' class.-->
 <Page
     x:Class="SC.SimpleSudoku.Views.MainPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -8,8 +8,10 @@
     xmlns:viewModels="using:SC.SimpleSudoku.ViewModels"
     xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
     xmlns:core="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:behaviors="using:SC.SimpleSudoku.Behaviors"
     mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    KeyDown="MainPage_OnKeyDown">
     <Page.Resources>
         <ResourceDictionary Source="MainPageResources.xaml" />
     </Page.Resources>
@@ -22,11 +24,12 @@
                     Visibility="{Binding CurrentNavState.IsPuzzleDifficultyVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
             <StackPanel Orientation="Horizontal">
                 <TextBlock Margin="5" Text="Puzzle Seed:" />
-                <TextBox Text="{Binding EnteredSeed, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, Converter={StaticResource NullableIntConverter}}"
-                         PlaceholderText="Random Seed" />
+                <TextBox
+                    Text="{Binding EnteredSeed, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, Converter={StaticResource NullableIntConverter}}"
+                    PlaceholderText="Random Seed" />
             </StackPanel>
             <Button Content="Easy" FontSize="28" HorizontalAlignment="Center" Margin="0,5,0,0"
-                    Command="{Binding ShowPuzzleCommand}" CommandParameter="Easy"/>
+                    Command="{Binding ShowPuzzleCommand}" CommandParameter="Easy" />
             <Button Content="Normal" FontSize="28" HorizontalAlignment="Center" Margin="0,5,0,0"
                     Command="{Binding ShowPuzzleCommand}" CommandParameter="Normal" />
             <Button Content="Hard" FontSize="28" HorizontalAlignment="Center" Margin="0,5,0,0"
@@ -39,7 +42,7 @@
             Visibility="{Binding CurrentNavState.IsSolvingVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto" />
                 <RowDefinition />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
@@ -51,48 +54,75 @@
                     </StackPanel>
                 </CommandBar.Content>
                 <CommandBar.PrimaryCommands>
-                    <AppBarToggleButton Content="Pencil Mode" IsChecked="{Binding IsInPencilMode}" Width="100" HorizontalContentAlignment="Center"/>
-                    <AppBarButton Icon="Help" Label="Hint" />
-                    <AppBarButton Icon="View" Label="Reveal" />
+                    <AppBarToggleButton Icon="Edit" Label="Pencil Mode"
+                                        IsChecked="{Binding IsInPencilMode, Mode=TwoWay}" Width="100"
+                                        HorizontalContentAlignment="Center" />
+                    <AppBarButton Icon="View" Label="Reveal" Command="{Binding RevealCommand}" />
                 </CommandBar.PrimaryCommands>
             </CommandBar>
             <TextBlock HorizontalAlignment="Left" Margin="50,50,0,0" Grid.Row="1" TextWrapping="Wrap"
-                       Text="{Binding PuzzleTimer.TimerString}" FontSize="50" VerticalAlignment="Top" Visibility="{Binding Options.IsPuzzleTimerVisible, Converter={StaticResource BooleanToVisibilityConverter}}" />
-            <Grid Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center" BorderBrush="Black" BorderThickness="2">
-                <ItemsControl HorizontalAlignment="Center" VerticalAlignment="Center"
-                          ItemTemplate="{StaticResource RowTemplate}" ItemsSource="{Binding Cells}" Background="Black" />
-                <Grid IsHitTestVisible="False">
-                    <Grid.RowDefinitions>
-                        <RowDefinition/>
-                        <RowDefinition/>
-                        <RowDefinition/>
-                    </Grid.RowDefinitions>
+                       Text="{Binding PuzzleTimer.TimerString}" FontSize="50" VerticalAlignment="Top"
+                       Visibility="{Binding Options.IsPuzzleTimerVisible, Converter={StaticResource BooleanToVisibilityConverter}}" />
 
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                    </Grid.ColumnDefinitions>
-                    
-                    <!--Rectangles to thicken lines in grid, creating 3 by 3 boxes.-->
-                    <Rectangle Grid.Row="0" Grid.Column="0" Grid.RowSpan="3" Width="2" HorizontalAlignment="Left" VerticalAlignment="Stretch" IsHitTestVisible="False" Fill="Black"/>
-                    <Rectangle Grid.Row="0" Grid.Column="0" Grid.RowSpan="3" Width="2" HorizontalAlignment="Right" VerticalAlignment="Stretch" IsHitTestVisible="False" Fill="Black"/>
-                    <Rectangle Grid.Row="0" Grid.Column="1" Grid.RowSpan="3" Width="2" HorizontalAlignment="Left" VerticalAlignment="Stretch" IsHitTestVisible="False" Fill="Black"/>
-                    <Rectangle Grid.Row="0" Grid.Column="1" Grid.RowSpan="3" Width="2" HorizontalAlignment="Right" VerticalAlignment="Stretch" IsHitTestVisible="False" Fill="Black"/>
-                    <Rectangle Grid.Row="0" Grid.Column="2" Grid.RowSpan="3" Width="2" HorizontalAlignment="Left" VerticalAlignment="Stretch" IsHitTestVisible="False" Fill="Black"/>
-                    <Rectangle Grid.Row="0" Grid.Column="2" Grid.RowSpan="3" Width="2" HorizontalAlignment="Right" VerticalAlignment="Stretch" IsHitTestVisible="False" Fill="Black"/>
-                    
-                    <Rectangle Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Height="2" HorizontalAlignment="Stretch" VerticalAlignment="Top" IsHitTestVisible="False" Fill="Black"/>
-                    <Rectangle Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Height="2" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" IsHitTestVisible="False" Fill="Black"/>
-                    <Rectangle Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Height="2" HorizontalAlignment="Stretch" VerticalAlignment="Top" IsHitTestVisible="False" Fill="Black"/>
-                    <Rectangle Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Height="2" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" IsHitTestVisible="False" Fill="Black"/>
-                    <Rectangle Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Height="2" HorizontalAlignment="Stretch" VerticalAlignment="Top" IsHitTestVisible="False" Fill="Black"/>
-                    <Rectangle Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Height="2" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" IsHitTestVisible="False" Fill="Black"/>
+            <ScrollViewer Grid.Row="2" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                <Grid HorizontalAlignment="Center" VerticalAlignment="Center" BorderBrush="Black"
+                      BorderThickness="2">
+
+                    <ItemsControl HorizontalAlignment="Center" VerticalAlignment="Center"
+                                  ItemTemplate="{StaticResource RowTemplate}" ItemsSource="{Binding Cells}"
+                                  Background="Black" />
+                    <Grid IsHitTestVisible="False">
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+
+                        <!--Rectangles to thicken lines in grid, creating 3 by 3 boxes to overlay the Sudoku grid.-->
+                        <Rectangle Grid.Row="0" Grid.Column="0" Grid.RowSpan="3" Width="2" HorizontalAlignment="Left"
+                                   VerticalAlignment="Stretch" IsHitTestVisible="False" Fill="Black" />
+                        <Rectangle Grid.Row="0" Grid.Column="0" Grid.RowSpan="3" Width="2" HorizontalAlignment="Right"
+                                   VerticalAlignment="Stretch" IsHitTestVisible="False" Fill="Black" />
+                        <Rectangle Grid.Row="0" Grid.Column="1" Grid.RowSpan="3" Width="2" HorizontalAlignment="Left"
+                                   VerticalAlignment="Stretch" IsHitTestVisible="False" Fill="Black" />
+                        <Rectangle Grid.Row="0" Grid.Column="1" Grid.RowSpan="3" Width="2" HorizontalAlignment="Right"
+                                   VerticalAlignment="Stretch" IsHitTestVisible="False" Fill="Black" />
+                        <Rectangle Grid.Row="0" Grid.Column="2" Grid.RowSpan="3" Width="2" HorizontalAlignment="Left"
+                                   VerticalAlignment="Stretch" IsHitTestVisible="False" Fill="Black" />
+                        <Rectangle Grid.Row="0" Grid.Column="2" Grid.RowSpan="3" Width="2" HorizontalAlignment="Right"
+                                   VerticalAlignment="Stretch" IsHitTestVisible="False" Fill="Black" />
+
+                        <Rectangle Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Height="2"
+                                   HorizontalAlignment="Stretch" VerticalAlignment="Top" IsHitTestVisible="False"
+                                   Fill="Black" />
+                        <Rectangle Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Height="2"
+                                   HorizontalAlignment="Stretch" VerticalAlignment="Bottom" IsHitTestVisible="False"
+                                   Fill="Black" />
+                        <Rectangle Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Height="2"
+                                   HorizontalAlignment="Stretch" VerticalAlignment="Top" IsHitTestVisible="False"
+                                   Fill="Black" />
+                        <Rectangle Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Height="2"
+                                   HorizontalAlignment="Stretch" VerticalAlignment="Bottom" IsHitTestVisible="False"
+                                   Fill="Black" />
+                        <Rectangle Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Height="2"
+                                   HorizontalAlignment="Stretch" VerticalAlignment="Top" IsHitTestVisible="False"
+                                   Fill="Black" />
+                        <Rectangle Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Height="2"
+                                   HorizontalAlignment="Stretch" VerticalAlignment="Bottom" IsHitTestVisible="False"
+                                   Fill="Black" />
+                    </Grid>
+
                 </Grid>
-            </Grid>
+            </ScrollViewer>
 
             <ContentControl Grid.Row="3" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
-                            Margin="10,20" ContentTemplate="{StaticResource PuzzleTouchEntryPanel}" />
+                            Margin="10,20" ContentTemplate="{StaticResource PuzzleTouchEntryPanel}" Content="{Binding}" />
         </Grid>
 
         <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
@@ -128,21 +158,17 @@
                                            Text="Username" />
                                 <TextBox Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Margin="2"
                                          Text="{Binding EnteredUsername, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-                                    <!--<interactivity:Interaction.Behaviors>
-                                        <core:EventTriggerBehavior EventName="KeyPressed">
-                                            <core:InvokeCommandAction Command="{Binding SignInCommand}"/>
-                                        </core:EventTriggerBehavior>
-                                    </interactivity:Interaction.Behaviors>-->
+                                    <interactivity:Interaction.Behaviors>
+                                        <behaviors:ReturnKeyCommandBehavior Command="{Binding SignInCommand}" />
+                                    </interactivity:Interaction.Behaviors>
                                 </TextBox>
                                 <TextBlock Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="2,2,10,2"
                                            Text="Password" />
                                 <PasswordBox Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Margin="2"
                                              Password="{Binding EnteredPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-                                    <!--<interactivity:Interaction.Behaviors>
-                                        <core:EventTriggerBehavior>
-                                            <core:InvokeCommandAction Command="{Binding SignInCommand}"/>
-                                        </core:EventTriggerBehavior>
-                                    </interactivity:Interaction.Behaviors>-->
+                                    <interactivity:Interaction.Behaviors>
+                                        <behaviors:ReturnKeyCommandBehavior Command="{Binding SignInCommand}" />
+                                    </interactivity:Interaction.Behaviors>
                                 </PasswordBox>
 
                                 <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
@@ -194,7 +220,7 @@
 
                                                 <TextBlock Grid.Row="0" Grid.Column="0" Text="New Password" Margin="5" />
                                                 <PasswordBox Grid.Row="0" Grid.Column="1"
-                                                             Password="{Binding ChangePasswordBox, UpdateSourceTrigger=PropertyChanged}"
+                                                             Password="{Binding ChangePasswordBox1, UpdateSourceTrigger=PropertyChanged}"
                                                              MinWidth="150" Margin="5" />
 
                                                 <TextBlock Grid.Row="1" Grid.Column="0" Text="Confirm Password"
@@ -219,10 +245,11 @@
 
             <StackPanel Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Stretch" Grid.Row="1"
                         Grid.ColumnSpan="3">
-                <Button Content="Continue Puzzle" HorizontalAlignment="Center" Margin="0,5" FontSize="28" IsEnabled="{Binding IsContinuePuzzleButtonEnabled}" Command="{Binding ContinuePuzzleCommand}"/>
+                <Button Content="Continue Puzzle" HorizontalAlignment="Center" Margin="0,5" FontSize="28"
+                        IsEnabled="{Binding IsContinuePuzzleButtonEnabled}" Command="{Binding ContinuePuzzleCommand}" />
                 <Button Content="New Puzzle" HorizontalAlignment="Center" Margin="0,5" FontSize="28"
                         Command="{Binding NewPuzzleCommand}" />
-                <Button Content="Leaderboard" HorizontalAlignment="Center" Margin="0,5" FontSize="28" IsEnabled="False"/>
+                <Button Content="Leaderboard" HorizontalAlignment="Center" Margin="0,5" FontSize="28" IsEnabled="False" />
                 <Button Content="Options" HorizontalAlignment="Center" Margin="0,5" FontSize="28"
                         Command="{Binding OptionsCommand}" />
             </StackPanel>
@@ -263,5 +290,148 @@
 
             </StackPanel>
         </Grid>
+
+        <Grid Visibility="{Binding CurrentNavState.IsPuzzleLeaderboardVisible}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+
+            <CommandBar ClosedDisplayMode="Compact" HorizontalContentAlignment="Left">
+                <CommandBar.Content>
+                    <StackPanel>
+                        <AppBarButton Icon="Home" Label="Main Menu" Margin="15,0" Command="{Binding GoHomeCommand}"
+                                      IsCompact="{Binding IsOpen,ElementName=AppCommandBar,Converter={StaticResource InvertBooleanConverter}}" />
+                    </StackPanel>
+                </CommandBar.Content>
+                <CommandBar.PrimaryCommands>
+
+                </CommandBar.PrimaryCommands>
+            </CommandBar>
+
+            <RelativePanel Grid.Row="1">
+                <TextBlock x:Name="SeedBox" Text="Seed: " />
+                <TextBlock RelativePanel.RightOf="SeedBox" Text="{Binding CurrentPuzzle.Seed}" />
+                <TextBlock x:Name="ScoreBox" Text="Score: " />
+                <TextBlock RelativePanel.RightOf="ScoreBox" Text="{Binding PreviousAttempt.Score}" />
+            </RelativePanel>
+
+            <ScrollViewer Grid.Row="2" HorizontalScrollMode="Disabled" VerticalScrollBarVisibility="Auto"
+                          HorizontalAlignment="Stretch">
+                <StackPanel HorizontalAlignment="Stretch">
+                    <Grid Margin="5" HorizontalAlignment="Stretch" Background="DarkGray">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="2*" MinWidth="200" />
+                            <ColumnDefinition Width="1*" MinWidth="50" />
+                            <ColumnDefinition Width="2*" MinWidth="200" />
+                            <ColumnDefinition Width="1*" MinWidth="50" />
+                            <ColumnDefinition Width="2*" />
+                            <ColumnDefinition Width="2*" />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Column="0" Text="Username" Margin="5" />
+                        <TextBlock Grid.Column="1" Text="Score" Margin="5" />
+                        <TextBlock Grid.Column="2" Text="Solving Time" Margin="5" />
+                        <TextBlock Grid.Column="3" Text="# Mistakes" Margin="5" />
+                        <TextBlock Grid.Column="4" Text="Start Time" Margin="5" />
+                        <TextBlock Grid.Column="5" Text="Finish Time" Margin="5" />
+                    </Grid>
+
+
+                    <ItemsControl ItemsSource="{Binding PuzzleAttempts}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="5" HorizontalAlignment="Stretch" Background="LightGray">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="2*" MinWidth="200" />
+                                        <ColumnDefinition Width="1*" MinWidth="50" />
+                                        <ColumnDefinition Width="2*" MinWidth="200" />
+                                        <ColumnDefinition Width="1*" MinWidth="50" />
+                                        <ColumnDefinition Width="2*" />
+                                        <ColumnDefinition Width="2*" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock Grid.Column="0" Text="{Binding Username}" Margin="5" />
+                                    <TextBlock Grid.Column="1" Text="{Binding Score}" Margin="5" />
+                                    <TextBlock Grid.Column="2" Text="{Binding SolvingTime}" Margin="5" />
+                                    <TextBlock Grid.Column="3" Text="{Binding MistakeCount}" Margin="5" />
+                                    <TextBlock Grid.Column="4" Text="{Binding DateTimeAttempted}" Margin="5" />
+                                    <TextBlock Grid.Column="5" Text="{Binding DateTimeCompleted}" Margin="5" />
+                                </Grid>
+
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </ScrollViewer>
+
+        </Grid>
+
+        <!--<Grid Visibility="{Binding CurrentNavState.IsUserLeaderboardVisible}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+
+            <CommandBar ClosedDisplayMode="Compact" HorizontalContentAlignment="Left">
+                <CommandBar.Content>
+                    <StackPanel>
+                        <AppBarButton Icon="Home" Label="Main Menu" Margin="15,0" Command="{Binding GoHomeCommand}"
+                                      IsCompact="{Binding IsOpen,ElementName=AppCommandBar,Converter={StaticResource InvertBooleanConverter}}" />
+                    </StackPanel>
+                </CommandBar.Content>
+                <CommandBar.PrimaryCommands>
+
+                </CommandBar.PrimaryCommands>
+            </CommandBar>
+            <ScrollViewer Grid.Row="1" HorizontalScrollMode="Disabled" VerticalScrollBarVisibility="Auto" HorizontalAlignment="Stretch">
+                <StackPanel HorizontalAlignment="Stretch">
+                    <Grid Margin="5" HorizontalAlignment="Stretch" Background="DarkGray">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="2*" MinWidth="200" />
+                            <ColumnDefinition Width="1*" MinWidth="50" />
+                            <ColumnDefinition Width="2*" MinWidth="200" />
+                            <ColumnDefinition Width="1*" MinWidth="50" />
+                            <ColumnDefinition Width="1*" MinWidth="50" />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Column="0" Text="Username" Margin="5" />
+                        <TextBlock Grid.Column="1" Text="Average Score" Margin="5" />
+                        <TextBlock Grid.Column="2" Text="Average Solving Time" Margin="5" />
+                        <TextBlock Grid.Column="3" Text="Average # Mistakes" Margin="5" />
+                        <TextBlock Grid.Column="4" Text="# Solved" Margin="5" />
+                    </Grid>
+
+
+                    <ItemsControl ItemsSource="{Binding}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="5" HorizontalAlignment="Stretch" Background="LightGray">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="2*" MinWidth="200" />
+                                        <ColumnDefinition Width="1*" MinWidth="50" />
+                                        <ColumnDefinition Width="2*" MinWidth="200" />
+                                        <ColumnDefinition Width="1*" MinWidth="50" />
+                                        <ColumnDefinition Width="1*" MinWidth="50" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock Grid.Column="0" Text="{Binding }" Margin="5" />
+                                    <TextBlock Grid.Column="1" Text="{Binding Score}" Margin="5" />
+                                    <TextBlock Grid.Column="2" Text="{Binding SolvingTime}" Margin="5" />
+                                    <TextBlock Grid.Column="3" Text="{Binding MistakeCount}" Margin="5" />
+                                    <TextBlock Grid.Column="4" Text="{Binding DateTimeAttempted}" Margin="5" />
+                                    <TextBlock Grid.Column="5" Text="{Binding DateTimeCompleted}" Margin="5" />
+                                </Grid>
+
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </ScrollViewer>
+
+        </Grid>-->
     </Grid>
+
+
 </Page>

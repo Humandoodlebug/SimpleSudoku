@@ -5,7 +5,7 @@ namespace SC.SimpleSudoku.Model
 {
     internal class Sudoku
     {
-        public Base_Puzzle BasePuzzle { get; }
+        public BasePuzzle BasePuzzle { get; }
 
         public byte[,] ProblemData { get; }
 
@@ -13,7 +13,7 @@ namespace SC.SimpleSudoku.Model
 
         public int Seed { get; private set; }
 
-        public Sudoku(Base_Puzzle basePuzzle, int? seed = null)
+        public Sudoku(BasePuzzle basePuzzle, int? seed = null)
         {
             BasePuzzle = basePuzzle;
             if (seed == null)

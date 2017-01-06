@@ -96,21 +96,14 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Behaviors\ReturnKeyCommandBehavior.cs" />
     <Compile Include="Converters\BooleanToVisibilityConverter.cs" />
     <Compile Include="Converters\EnumDescriptionConverter.cs" />
     <Compile Include="Converters\InvertBooleanConverter.cs" />
     <Compile Include="Converters\NullableIntConverter.cs" />
-    <Compile Include="Migrations\20161212105025_InitialCreate.cs" />
-    <Compile Include="Migrations\20161212105025_InitialCreate.designer.cs">
-      <DependentUpon>20161212105025_InitialCreate.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\20170101154507_AddCurrentBasePuzzleIDToUser.cs" />
-    <Compile Include="Migrations\20170101154507_AddCurrentBasePuzzleIDToUser.designer.cs">
-      <DependentUpon>20170101154507_AddCurrentBasePuzzleIDToUser.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\20170101180536_AddCurrentSolvingTimeToUser.cs" />
-    <Compile Include="Migrations\20170101180536_AddCurrentSolvingTimeToUser.designer.cs">
-      <DependentUpon>20170101180536_AddCurrentSolvingTimeToUser.cs</DependentUpon>
+    <Compile Include="Migrations\20170105145134_InitialCreate.cs" />
+    <Compile Include="Migrations\20170105145134_InitialCreate.designer.cs">
+      <DependentUpon>20170105145134_InitialCreate.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\SudokuDataContextModelSnapshot.cs" />
     <Compile Include="Model\DelegateCommand.cs" />
@@ -166,9 +159,7 @@
       <Name>Windows Mobile Extensions for the UWP</Name>
     </SDKReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Behaviors\" />
-  </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

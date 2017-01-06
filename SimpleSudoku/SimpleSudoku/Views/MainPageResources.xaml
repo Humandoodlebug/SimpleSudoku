@@ -14,10 +14,9 @@
         <Setter Property="Background" Value="{StaticResource ApplicationPageBackgroundThemeBrush}" />
         <Setter Property="BorderThickness" Value="0" />
     </Style>
-    
+
     <converters:NullableIntConverter x:Key="NullableIntConverter"/>
 
-    
     <DataTemplate x:Key="CellTemplate">
         <Grid Margin="1" Width="50" Height="50">
             <Grid.RowDefinitions>
@@ -31,18 +30,29 @@
                 <ColumnDefinition/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <Grid Background="Azure" Grid.RowSpan="3" Grid.ColumnSpan="3">
-            <Button Content="{Binding Number}" Background="White" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Command="{Binding CellClickedCommand}" FontSize="30"/>
+            <Grid Background="WhiteSmoke" Grid.RowSpan="3" Grid.ColumnSpan="3">
+                <interactivity:Interaction.Behaviors>
+                    <core:DataTriggerBehavior Binding="{Binding IsVisiblyWrong}" Value="True">
+                        <core:ChangePropertyAction PropertyName="BorderBrush" Value="Red"/>
+                        <core:ChangePropertyAction PropertyName="BorderThickness" Value="2"/>
+                    </core:DataTriggerBehavior>
+                    <core:DataTriggerBehavior Binding="{Binding IsVisiblyWrong}" Value="False">
+                        <core:ChangePropertyAction PropertyName="BorderBrush" Value="Black"/>
+                        <core:ChangePropertyAction PropertyName="BorderThickness" Value="0"/>
+                    </core:DataTriggerBehavior>
+                </interactivity:Interaction.Behaviors>
+                
+            <ToggleButton Content="{Binding Content}" Background="WhiteSmoke" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Command="{Binding CellClickedCommand}" FontSize="30" Foreground="Black" IsEnabled="{Binding IsReadOnly, Converter={StaticResource InvertBooleanConverter}}"  IsChecked="{Binding IsSelected, Mode=TwoWay}"/>
             </Grid>
-            <TextBlock Grid.Row="0" Grid.Column="0" Text="1" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False" Visibility="{Binding Is1Visible}"/>
-            <TextBlock Grid.Row="0" Grid.Column="1" Text="2" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False" Visibility="{Binding Is2Visible}"/>
-            <TextBlock Grid.Row="0" Grid.Column="2" Text="3" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False" Visibility="{Binding Is3Visible}"/>
-            <TextBlock Grid.Row="1" Grid.Column="0" Text="4" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False" Visibility="{Binding Is4Visible}"/>
-            <TextBlock Grid.Row="1" Grid.Column="1" Text="5" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False" Visibility="{Binding Is5Visible}"/>
-            <TextBlock Grid.Row="1" Grid.Column="2" Text="6" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False" Visibility="{Binding Is6Visible}"/>
-            <TextBlock Grid.Row="2" Grid.Column="0" Text="7" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False" Visibility="{Binding Is7Visible}"/>
-            <TextBlock Grid.Row="2" Grid.Column="1" Text="8" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False" Visibility="{Binding Is8Visible}"/>
-            <TextBlock Grid.Row="2" Grid.Column="2" Text="9" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False" Visibility="{Binding Is9Visible}"/>
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="1" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False" Visibility="{Binding Is1Visible}" Foreground="Black"/>
+            <TextBlock Grid.Row="0" Grid.Column="1" Text="2" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False" Visibility="{Binding Is2Visible}" Foreground="Black"/>
+            <TextBlock Grid.Row="0" Grid.Column="2" Text="3" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False" Visibility="{Binding Is3Visible}" Foreground="Black"/>
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="4" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False" Visibility="{Binding Is4Visible}" Foreground="Black"/>
+            <TextBlock Grid.Row="1" Grid.Column="1" Text="5" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False" Visibility="{Binding Is5Visible}" Foreground="Black"/>
+            <TextBlock Grid.Row="1" Grid.Column="2" Text="6" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False" Visibility="{Binding Is6Visible}" Foreground="Black"/>
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="7" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False" Visibility="{Binding Is7Visible}" Foreground="Black"/>
+            <TextBlock Grid.Row="2" Grid.Column="1" Text="8" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False" Visibility="{Binding Is8Visible}" Foreground="Black"/>
+            <TextBlock Grid.Row="2" Grid.Column="2" Text="9" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False" Visibility="{Binding Is9Visible}" Foreground="Black"/>
         </Grid>
         <!--Example Behaviour-->
         <!--<interactivity:Interaction.Behaviors>

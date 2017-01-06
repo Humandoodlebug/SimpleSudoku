@@ -1,6 +1,9 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
+using Microsoft.EntityFrameworkCore;
 using SC.SimpleSudoku.Model;
 
 namespace SC.SimpleSudoku.ViewModels
@@ -24,11 +27,18 @@ namespace SC.SimpleSudoku.ViewModels
         private bool _is8Visible;
 
         private bool _is9Visible;
+
         private byte? _content;
 
-        public int Row { get; }
-        public int Column { get; }
+        private int Row { get; }
+        private int Column { get; }
 
+        private SudokuDataContext Database { get; set; }
+
+
+        /// <summary>
+        /// The number that the cell has been holding, stored as a Nullable byte (byte?).
+        /// </summary>
         public byte? Content
         {
             get { return _content; }
@@ -39,6 +49,9 @@ namespace SC.SimpleSudoku.ViewModels
             }
         }
 
+        /// <summary>
+        /// Whether the cell is selected or not. Only one cell in the grid should be selected at a time.
+        /// </summary>
         public bool IsSelected
         {
             get { return _isSelected; }
@@ -51,21 +64,69 @@ namespace SC.SimpleSudoku.ViewModels
             }
         }
 
+        // ReSharper disable once UnusedMember.Global
         public ICommand CellClickedCommand => new DelegateCommand(obj => OnCellSelected());
         private bool _isSelected;
+        private bool _isReadOnly;
+        private bool _isWrong;
 
+        /// <summary>
+        /// A copy of the options that the user has set from the options page. This is so the cell knows how it should display itself, based on these options.
+        /// </summary>
         private OptionsViewModel Options { get; }
+        
+        /// <summary>
+        /// The username of the currently signed in user, for looking up the user in the database.
+        /// </summary>
+        private string Username { get; }
 
-        public CellViewModel(OptionsViewModel options, int row, int column, CellSelectedEventHandler cellSelectedEventHandler, byte? content = null )
+        public CellViewModel(OptionsViewModel options, int row, int column, CellSelectedEventHandler cellSelectedEventHandler, byte? content, bool isReadOnly, DbSet<Mistake> mistakes, bool isWrong, string username, SudokuDataContext database)
         {
             Options = options;
             Column = column;
             Row = row;
+            IsReadOnly = isReadOnly;
             Content = content;
             CellSelected += cellSelectedEventHandler;
+            Username = username;
+            Mistakes = mistakes;
+            Database = database;
+            IsWrong = isWrong;
         }
 
-        public bool ReadOnly { get; set; }
+        private DbSet<Mistake> Mistakes { get; }
+
+        public bool IsVisiblyWrong => IsWrong && Options.IsMistakeHighlightingOn;
+
+        public bool IsWrong
+        {
+            get { return _isWrong; }
+            set
+            {
+                _isWrong = value;
+                OnPropertyChanged();
+                // ReSharper disable once ExplicitCallerInfoArgument
+                OnPropertyChanged(nameof(IsVisiblyWrong));
+                if (value == false) return;
+                //Add a mistake to the mistakes list.
+                if (Mistakes.Any(x => x.Row == Row && x.Column == Column && x.Username == Username))
+                    return;
+                Mistakes.Add(new Mistake {Row = Row, Column = Column, Username = Username});
+                Database.SaveChanges();
+            }
+        }
+
+        public bool IsReadOnly
+        {
+            get { return _isReadOnly; }
+            set
+            {
+                if (value == _isReadOnly)
+                    return;
+                _isReadOnly = value; 
+                OnPropertyChanged();
+            }
+        }
 
         public bool Is1Visible
         {
@@ -153,17 +214,6 @@ namespace SC.SimpleSudoku.ViewModels
             set
             {
                 _is9Visible = value;
-                OnPropertyChanged();
-            }
-        }
-
-
-        public byte? Number
-        {
-            get { return Content; }
-            set
-            {
-                Content = value;
                 OnPropertyChanged();
             }
         }

@@ -15,9 +15,9 @@ namespace SC.SimpleSudoku.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.0.1");
 
-            modelBuilder.Entity("SC.SimpleSudoku.Base_Puzzle", b =>
+            modelBuilder.Entity("SC.SimpleSudoku.BasePuzzle", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<int>("BasePuzzleID")
                         .ValueGeneratedOnAdd();
 
                     b.Property<int>("Difficulty");
@@ -26,9 +26,24 @@ namespace SC.SimpleSudoku.Migrations
 
                     b.Property<string>("PuzzleSolutionData");
 
-                    b.HasKey("ID");
+                    b.HasKey("BasePuzzleID");
 
                     b.ToTable("BasePuzzles");
+                });
+
+            modelBuilder.Entity("SC.SimpleSudoku.Mistake", b =>
+                {
+                    b.Property<string>("Username");
+
+                    b.Property<int>("Row");
+
+                    b.Property<int>("Column");
+
+                    b.HasKey("Username", "Row", "Column");
+
+                    b.HasIndex("Username");
+
+                    b.ToTable("Mistakes");
                 });
 
             modelBuilder.Entity("SC.SimpleSudoku.Old_Password", b =>
@@ -43,18 +58,16 @@ namespace SC.SimpleSudoku.Migrations
 
                     b.HasIndex("Username1");
 
-                    b.ToTable("OldPasswords");
+                    b.ToTable("Old_Password");
                 });
 
             modelBuilder.Entity("SC.SimpleSudoku.Puzzle", b =>
                 {
-                    b.Property<int>("Seed");
+                    b.Property<int>("PuzzleSeed");
 
-                    b.Property<int>("BasePuzzleID");
+                    b.Property<int>("BasePuzzleId");
 
-                    b.Property<int>("Difficulty");
-
-                    b.HasKey("Seed", "BasePuzzleID");
+                    b.HasKey("PuzzleSeed", "BasePuzzleId");
 
                     b.ToTable("Puzzles");
                 });
@@ -65,6 +78,8 @@ namespace SC.SimpleSudoku.Migrations
 
                     b.Property<int>("PuzzleSeed");
 
+                    b.Property<int>("BasePuzzleID");
+
                     b.Property<int>("AttemptNum");
 
                     b.Property<DateTime>("DateTimeAttempted");
@@ -73,21 +88,19 @@ namespace SC.SimpleSudoku.Migrations
 
                     b.Property<int>("MistakeCount");
 
-                    b.Property<int?>("PuzzleBasePuzzleID");
-
-                    b.Property<int?>("PuzzleSeed1");
-
                     b.Property<int>("Score");
 
                     b.Property<TimeSpan>("SolvingTime");
 
                     b.Property<string>("Username1");
 
-                    b.HasKey("Username", "PuzzleSeed", "AttemptNum");
+                    b.HasKey("Username", "PuzzleSeed", "BasePuzzleID", "AttemptNum");
+
+                    b.HasIndex("BasePuzzleID");
 
                     b.HasIndex("Username1");
 
-                    b.HasIndex("PuzzleSeed1", "PuzzleBasePuzzleID");
+                    b.HasIndex("PuzzleSeed", "BasePuzzleID");
 
                     b.ToTable("PuzzleAttempts");
                 });
@@ -96,17 +109,19 @@ namespace SC.SimpleSudoku.Migrations
                 {
                     b.Property<string>("Username");
 
-                    b.Property<int>("AveragePuzzleDifficulty");
+                    b.Property<double>("AveragePuzzleDifficulty");
 
-                    b.Property<int>("AverageScore");
+                    b.Property<double>("AverageScore");
 
                     b.Property<TimeSpan>("AverageSolvingTime");
 
-                    b.Property<int>("CurrentBasePuzzleID");
+                    b.Property<int>("CurrentBasePuzzleId");
 
                     b.Property<string>("CurrentPuzzleData");
 
                     b.Property<int>("CurrentPuzzleSeed");
+
+                    b.Property<DateTime>("CurrentPuzzleStartTime");
 
                     b.Property<TimeSpan>("CurrentSolvingTime");
 
@@ -127,22 +142,36 @@ namespace SC.SimpleSudoku.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("SC.SimpleSudoku.Mistake", b =>
+                {
+                    b.HasOne("SC.SimpleSudoku.User", "User")
+                        .WithMany("CurrentPuzzleMistakes")
+                        .HasForeignKey("Username")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
             modelBuilder.Entity("SC.SimpleSudoku.Old_Password", b =>
                 {
-                    b.HasOne("SC.SimpleSudoku.User")
+                    b.HasOne("SC.SimpleSudoku.User", "User")
                         .WithMany("OldPasswords")
                         .HasForeignKey("Username1");
                 });
 
             modelBuilder.Entity("SC.SimpleSudoku.Puzzle_Attempt", b =>
                 {
+                    b.HasOne("SC.SimpleSudoku.BasePuzzle", "BasePuzzle")
+                        .WithMany("PuzzleAttempts")
+                        .HasForeignKey("BasePuzzleID")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("SC.SimpleSudoku.User")
                         .WithMany("PuzzleAttempts")
                         .HasForeignKey("Username1");
 
-                    b.HasOne("SC.SimpleSudoku.Puzzle")
+                    b.HasOne("SC.SimpleSudoku.Puzzle", "Puzzle")
                         .WithMany("PuzzleAttempts")
-                        .HasForeignKey("PuzzleSeed1", "PuzzleBasePuzzleID");
+                        .HasForeignKey("PuzzleSeed", "BasePuzzleID")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
         }
     }
