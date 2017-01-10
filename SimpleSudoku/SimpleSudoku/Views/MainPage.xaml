@@ -13,6 +13,7 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     KeyDown="MainPage_OnKeyDown">
     <Page.Resources>
+        <!--A reference to the resource dictionary, where custom xaml resources referenced on the page are defined.-->
         <ResourceDictionary Source="MainPageResources.xaml" />
     </Page.Resources>
     <Page.DataContext>
