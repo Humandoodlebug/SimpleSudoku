@@ -8,7 +8,7 @@ using SC.SimpleSudoku;
 namespace SC.SimpleSudoku.Migrations
 {
     [DbContext(typeof(SudokuDataContext))]
-    [Migration("20170105145134_InitialCreate")]
+    [Migration("20170110191520_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -59,7 +59,7 @@ namespace SC.SimpleSudoku.Migrations
 
                     b.HasIndex("Username1");
 
-                    b.ToTable("Old_Password");
+                    b.ToTable("OldPasswords");
                 });
 
             modelBuilder.Entity("SC.SimpleSudoku.Puzzle", b =>

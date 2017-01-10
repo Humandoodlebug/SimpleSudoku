@@ -583,7 +583,7 @@ namespace SC.SimpleSudoku.ViewModels
                     PuzzleSeed = CurrentPuzzle.Seed,
                     Score =
                         (int)
-                        (1000 * (int) CurrentPuzzle.BasePuzzle.Difficulty / PuzzleTimer.CurrenTimeSpan.TotalHours *
+                        (1000 *  ((int)CurrentPuzzle.BasePuzzle.Difficulty + 1) / PuzzleTimer.CurrenTimeSpan.TotalHours *
                          Math.Pow(0.9, mistakeCount)),
                     DateTimeAttempted = CurrentUser.CurrentUser.CurrentPuzzleStartTime,
                     AttemptNum =
@@ -751,9 +751,7 @@ namespace SC.SimpleSudoku.ViewModels
         private void SignIn()
         {
             var user =
-                Database.Users.Include(x => x.CurrentPuzzleMistakes)
-                    .Include(x => x.OldPasswords)
-                    .Include(x => x.PuzzleAttempts)
+                Database.Users
                     .SingleOrDefault(
                         x => string.Equals(x.Username, EnteredUsername, StringComparison.CurrentCultureIgnoreCase));
             if (string.IsNullOrEmpty(EnteredUsername))

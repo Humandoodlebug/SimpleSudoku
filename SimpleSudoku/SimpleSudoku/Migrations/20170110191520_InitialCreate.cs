@@ -80,7 +80,7 @@ namespace SC.SimpleSudoku.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Old_Password",
+                name: "OldPasswords",
                 columns: table => new
                 {
                     Username = table.Column<string>(nullable: false),
@@ -89,9 +89,9 @@ namespace SC.SimpleSudoku.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Old_Password", x => new { x.Username, x.OldPassword });
+                    table.PrimaryKey("PK_OldPasswords", x => new { x.Username, x.OldPassword });
                     table.ForeignKey(
-                        name: "FK_Old_Password_Users_Username1",
+                        name: "FK_OldPasswords_Users_Username1",
                         column: x => x.Username1,
                         principalTable: "Users",
                         principalColumn: "Username",
@@ -142,8 +142,8 @@ namespace SC.SimpleSudoku.Migrations
                 column: "Username");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Old_Password_Username1",
-                table: "Old_Password",
+                name: "IX_OldPasswords_Username1",
+                table: "OldPasswords",
                 column: "Username1");
 
             migrationBuilder.CreateIndex(
@@ -168,7 +168,7 @@ namespace SC.SimpleSudoku.Migrations
                 name: "Mistakes");
 
             migrationBuilder.DropTable(
-                name: "Old_Password");
+                name: "OldPasswords");
 
             migrationBuilder.DropTable(
                 name: "PuzzleAttempts");

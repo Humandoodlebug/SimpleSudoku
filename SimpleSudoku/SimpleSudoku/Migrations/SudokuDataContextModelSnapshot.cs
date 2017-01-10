@@ -58,7 +58,7 @@ namespace SC.SimpleSudoku.Migrations
 
                     b.HasIndex("Username1");
 
-                    b.ToTable("Old_Password");
+                    b.ToTable("OldPasswords");
                 });
 
             modelBuilder.Entity("SC.SimpleSudoku.Puzzle", b =>

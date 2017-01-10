@@ -101,9 +101,9 @@
     <Compile Include="Converters\EnumDescriptionConverter.cs" />
     <Compile Include="Converters\InvertBooleanConverter.cs" />
     <Compile Include="Converters\NullableIntConverter.cs" />
-    <Compile Include="Migrations\20170105145134_InitialCreate.cs" />
-    <Compile Include="Migrations\20170105145134_InitialCreate.designer.cs">
-      <DependentUpon>20170105145134_InitialCreate.cs</DependentUpon>
+    <Compile Include="Migrations\20170110191520_InitialCreate.cs" />
+    <Compile Include="Migrations\20170110191520_InitialCreate.designer.cs">
+      <DependentUpon>20170110191520_InitialCreate.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\SudokuDataContextModelSnapshot.cs" />
     <Compile Include="Model\DelegateCommand.cs" />
