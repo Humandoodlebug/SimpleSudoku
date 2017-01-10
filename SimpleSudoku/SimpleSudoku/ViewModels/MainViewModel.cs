@@ -49,6 +49,7 @@ namespace SC.SimpleSudoku.ViewModels
 
         private int _selectedColumn = -1;
         private int _selectedRow = -1;
+        private User[] _user;
 
         public MainViewModel()
         {
@@ -267,6 +268,16 @@ namespace SC.SimpleSudoku.ViewModels
 
         public ICommand RevealCommand => new DelegateCommand(obj => Reveal());
 
+        public User[] UserLeaderboard
+        {
+            get { return _user; }
+            set
+            {
+                _user = value;
+                OnPropertyChanged();
+            }
+        }
+
         public List<Puzzle_Attempt> PuzzleAttempts
         {
             get { return _puzzleAttempts; }
@@ -287,7 +298,23 @@ namespace SC.SimpleSudoku.ViewModels
             }
         }
 
+        public ICommand ShowUserLeaderboardCommand => new DelegateCommand(obj => ShowUserLeaderboard());
+
         public event PropertyChangedEventHandler PropertyChanged;
+
+        private void ShowUserLeaderboard()
+        {
+            //Select the users from the database who have completed at least 3 puzzles, ordering them by score in descending order:
+            var leaderboard = from user in Database.Users
+                where user.NumPuzzlesSolved > 2
+                orderby user.AverageScore descending
+                select user;
+            //Put the users into the public 'UserLeaderboard' property to be displayed onscreen:
+            UserLeaderboard = leaderboard.ToArray();
+            //Show the leaderboard:
+            CurrentNavState.RecordView();
+            CurrentNavState.CurrentView = NavigationState.View.UserLeaderboard;
+        }
 
         private void CurrentNavState_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
@@ -465,6 +492,7 @@ namespace SC.SimpleSudoku.ViewModels
 
         private void ShowPuzzleLeaderboard()
         {
+            //Get all the puzzle attempts for the current puzzle:
             var allPuzzleAttempts =
                 Database.PuzzleAttempts.Where(
                     x => x.PuzzleSeed == CurrentPuzzle.Seed && x.BasePuzzleID == CurrentPuzzle.BasePuzzle.BasePuzzleID);
@@ -483,24 +511,29 @@ namespace SC.SimpleSudoku.ViewModels
                     break;
                 }
 
-                //If the user isn't in the puzzleAttempts list yet, add a new entry for them.
+                //If the user isn't in the puzzleAttempts list yet, add a new entry for them:
                 if (!found)
                     puzzleAttempts.Add(attempt);
             }
-
+            //Set the public property 'PuzzleAttempts', making the list publicly available for the UI to bind to and in descending order of score:
             PuzzleAttempts = puzzleAttempts.OrderByDescending(x => x.Score).ToList();
-            //Set the public property 'PuzzleAttempts', making the list publicly available for the UI to bind to and in descending order of score.
+            //Show the puzzle leaderboard:
             CurrentNavState.CurrentView = NavigationState.View.PuzzleLeaderboard;
         }
 
         /// <summary>
-        /// Called when the user presses a 
+        ///     Called by the UI when the user presses a number key on the keyboard.
+        ///     Sets the currently selected cell's content.
         /// </summary>
-        /// <param name="value"></param>
+        /// <param name="value">The number key that has been pressed.</param>
         public void SetValue(byte value)
         {
+            //If no cell is selected, do nothing:
             if (_selectedRow == -1 || _selectedColumn == -1)
                 return;
+            //If NOT in pencil mode (small numbers for note taking), 
+            //hide all small note numbers and set the cells content 
+            //to the 'value' parameter (the key that has been pressed):
             if (!IsInPencilMode)
             {
                 Cells[_selectedRow][_selectedColumn].Is1Visible = false;
@@ -514,15 +547,20 @@ namespace SC.SimpleSudoku.ViewModels
                 Cells[_selectedRow][_selectedColumn].Is9Visible = false;
 
                 Cells[_selectedRow][_selectedColumn].Content = value;
+                //Check if the user has entered the correct answer. If not, highlight the cell red:
                 Cells[_selectedRow][_selectedColumn].IsWrong = value !=
                                                                CurrentPuzzle.SolutionData[_selectedRow, _selectedColumn];
+                //If all cells have been filled in correctly, end the puzzle:
                 if (Cells.All(x => x.All(y => !y.IsWrong && y.Content != null)))
                     CompletePuzzle();
             }
-            else
+            else //Runs if pencil mode is on. Toggles the visibility of the
+                //relevant note number, depending on the key pressed.
             {
+                //Make sure the cell isn't filled in:
                 Cells[_selectedRow][_selectedColumn].Content = null;
                 Cells[_selectedRow][_selectedColumn].IsWrong = false;
+                //Toggle the visibility of the relevant note number:
                 switch (value)
                 {
                     case 1:
@@ -571,8 +609,11 @@ namespace SC.SimpleSudoku.ViewModels
         /// </summary>
         private void CompletePuzzle()
         {
+            //Stop the puzzle timer, since the user has completed the puzzle:
             PuzzleTimer.Stop();
+            //Count the number of mistakes the user has made:
             var mistakeCount = Database.Mistakes.Count(x => x.Username == CurrentUser.Username);
+            //Create a new puzzle attempt to represent the puzzle the user just solved:
             PreviousAttempt =
                 new Puzzle_Attempt
                 {
@@ -583,7 +624,7 @@ namespace SC.SimpleSudoku.ViewModels
                     PuzzleSeed = CurrentPuzzle.Seed,
                     Score =
                         (int)
-                        (1000 *  ((int)CurrentPuzzle.BasePuzzle.Difficulty + 1) / PuzzleTimer.CurrenTimeSpan.TotalHours *
+                        (1000 * ((int) CurrentPuzzle.BasePuzzle.Difficulty + 1) / PuzzleTimer.CurrenTimeSpan.TotalHours *
                          Math.Pow(0.9, mistakeCount)),
                     DateTimeAttempted = CurrentUser.CurrentUser.CurrentPuzzleStartTime,
                     AttemptNum =
@@ -595,20 +636,27 @@ namespace SC.SimpleSudoku.ViewModels
                     //AttemptNum = (from x in Database.PuzzleAttempts where x.Username == CurrentUser.Username && x.PuzzleSeed == CurrentPuzzle.Seed && x.BasePuzzleID == CurrentPuzzle.BasePuzzle.BasePuzzleID select x).Count(),
                     BasePuzzleID = CurrentPuzzle.BasePuzzle.BasePuzzleID
                 };
+            //Add this puzzle attempt to the database:
             Database.PuzzleAttempts.Add(PreviousAttempt);
+            //Update the average puzzle difficulty for the user:
             CurrentUser.AveragePuzzleDifficulty = (CurrentUser.AveragePuzzleDifficulty * CurrentUser.NumPuzzlesSolved +
                                                    (double) CurrentPuzzle.BasePuzzle.Difficulty) /
                                                   (CurrentUser.NumPuzzlesSolved + 1);
+            //Update the user's average score:
             CurrentUser.AverageScore = (CurrentUser.AverageScore * CurrentUser.NumPuzzlesSolved +
                                         (double) CurrentPuzzle.BasePuzzle.Difficulty) /
                                        (CurrentUser.NumPuzzlesSolved + 1);
+            //Update the user's average solving time:
             CurrentUser.AverageSolvingTime =
                 TimeSpan.FromSeconds((CurrentUser.AverageSolvingTime.TotalSeconds * CurrentUser.NumPuzzlesSolved +
                                       PreviousAttempt.SolvingTime.TotalSeconds) / (CurrentUser.NumPuzzlesSolved + 1));
+            //Update the user's total score:
             CurrentUser.TotalScore += PreviousAttempt.Score;
-
+            //Add 1 to the user's total number of puzzles solved:
             CurrentUser.NumPuzzlesSolved++;
+            //Save all changes:
             Database.SaveChanges();
+            //Show the puzzle leaderboard if the user has elected to see it in the options:
             if (Options.IsLeaderboardVisible)
                 ShowPuzzleLeaderboard();
         }
