@@ -209,6 +209,7 @@
                                         <Flyout Placement="Bottom">
                                             <Grid>
                                                 <Grid.RowDefinitions>
+                                                    <RowDefinition Height="Auto"/>
                                                     <RowDefinition Height="Auto" />
                                                     <RowDefinition Height="Auto" />
                                                     <RowDefinition Height="Auto" />
@@ -218,19 +219,29 @@
                                                     <ColumnDefinition />
                                                     <ColumnDefinition />
                                                 </Grid.ColumnDefinitions>
-
-                                                <TextBlock Grid.Row="0" Grid.Column="0" Text="New Password" Margin="5" />
-                                                <PasswordBox Grid.Row="0" Grid.Column="1"
-                                                             Password="{Binding ChangePasswordBox1, UpdateSourceTrigger=PropertyChanged}"
-                                                             MinWidth="150" Margin="5" />
-
-                                                <TextBlock Grid.Row="1" Grid.Column="0" Text="Confirm Password"
-                                                           Margin="5" />
+                                                
+                                                <TextBlock Grid.Row="0" Grid.ColumnSpan="2" Text="{Binding ChangePasswordErrorMessage}" TextWrapping="Wrap" Foreground="Red"/>
+                                                
+                                                <TextBlock Grid.Row="1" Grid.Column="0" Text="New Password" Margin="5" />
                                                 <PasswordBox Grid.Row="1" Grid.Column="1"
-                                                             Password="{Binding ChangePasswordBox2, UpdateSourceTrigger=PropertyChanged}"
-                                                             MinWidth="150" Margin="5" />
+                                                             Password="{Binding ChangePasswordBox1, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                             MinWidth="150" Margin="5">
+                                                    <interactivity:Interaction.Behaviors>
+                                                        <behaviors:ReturnKeyCommandBehavior Command="{Binding ChangePasswordCommand}"/>
+                                                    </interactivity:Interaction.Behaviors>
+                                                </PasswordBox>
 
-                                                <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
+                                                <TextBlock Grid.Row="2" Grid.Column="0" Text="Confirm Password"
+                                                           Margin="5" />
+                                                <PasswordBox Grid.Row="2" Grid.Column="1"
+                                                             Password="{Binding ChangePasswordBox2, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                             MinWidth="150" Margin="5">
+                                                    <interactivity:Interaction.Behaviors>
+                                                        <behaviors:ReturnKeyCommandBehavior Command="{Binding ChangePasswordCommand}"/>
+                                                    </interactivity:Interaction.Behaviors>
+                                                </PasswordBox>
+
+                                                <Button Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"
                                                         Content="Confirm" HorizontalAlignment="Right" Margin="5"
                                                         Command="{Binding ChangePasswordCommand}" />
                                             </Grid>
