@@ -689,13 +689,13 @@ namespace SC.SimpleSudoku.ViewModels
                     "The password must be between 6 and 42 characters,\rcontaining upper case letters, lower case letters and numbers.";
                 return;
             }
-            if (ChangePasswordBox1 == CurrentUser.Password || Database.OldPasswords.Any(x => x.Username == CurrentUser.Username && x.OldPassword == ChangePasswordBox1))
+            if (ChangePasswordBox1 == Encryption.Decrypt(CurrentUser.Password) || Database.OldPasswords.Any(x => x.Username == CurrentUser.Username && Encryption.Decrypt(x.OldPassword) == ChangePasswordBox1))
             {
                 ChangePasswordErrorMessage = "You’ve already used that password:\rYou must choose a new password.";
                 return;
             }
             Database.Add(new Old_Password {Username = CurrentUser.Username, OldPassword = CurrentUser.Password});
-            CurrentUser.Password = ChangePasswordBox1;
+            CurrentUser.Password = Encryption.Encrypt(ChangePasswordBox1);
             ChangePasswordErrorMessage = "Password changed!";
             Database.SaveChanges();
         }
@@ -805,7 +805,7 @@ namespace SC.SimpleSudoku.ViewModels
                 var user = new User
                 {
                     Username = EnteredUsername,
-                    Password = EnteredPassword
+                    Password = Encryption.Encrypt(EnteredPassword)
                 };
                 Database.Users.Add(user);
                 await Database.SaveChangesAsync();
@@ -829,7 +829,7 @@ namespace SC.SimpleSudoku.ViewModels
             {
                 LoginErrorMessage = "The username field cannot be left blank.";
             }
-            else if (user == null || user.Password != EnteredPassword)
+            else if (user == null || Encryption.Decrypt(user.Password) != EnteredPassword)
             {
                 LoginErrorMessage = "Sorry, this username/password combination is not recognised, please try again.";
             }
@@ -990,6 +990,23 @@ namespace SC.SimpleSudoku.ViewModels
                 //Invokes the 'PropertyChanged' event (if it is not null, hence the '?' before 'Invoke') to notify Users 
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
             }
+        }
+    }
+
+    internal static class Encryption
+    {
+        private const int Seed = 592;
+
+        public static string Encrypt(string s)
+        {
+            var random = new Random(Seed);
+            return string.Join("", from c in s select (char)(c + random.Next(-30,30)));
+        }
+
+        public static string Decrypt(string s)
+        {
+            var random = new Random(Seed);
+            return string.Join("", from c in s select (char)(c - random.Next(-30,30)));
         }
     }
 }

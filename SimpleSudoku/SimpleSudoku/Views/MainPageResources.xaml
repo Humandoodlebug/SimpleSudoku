@@ -30,7 +30,7 @@
                 <ColumnDefinition/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <Grid Background="WhiteSmoke" Grid.RowSpan="3" Grid.ColumnSpan="3">
+            <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Grid.RowSpan="3" Grid.ColumnSpan="3">
                 <interactivity:Interaction.Behaviors>
                     <core:DataTriggerBehavior Binding="{Binding IsVisiblyWrong}" Value="True">
                         <core:ChangePropertyAction PropertyName="BorderBrush" Value="Red"/>

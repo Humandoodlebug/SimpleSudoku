@@ -37,6 +37,7 @@ namespace SC.SimpleSudoku.Behaviors
 
         public DependencyObject AssociatedObject => _element;
 
+        /// <param name="associatedObject"></param>
         public void Attach(DependencyObject associatedObject)
         {
             if (associatedObject == _element || DesignMode.DesignModeEnabled)
@@ -52,6 +53,13 @@ namespace SC.SimpleSudoku.Behaviors
             _element.KeyUp -= ElementKeyUp;
         }
 
+        /// <summary>
+        /// Here's the event handler that runs when a key is pressed.
+        /// It ensures that the key pressed is the Enter key, then
+        /// executes the command set in the XAML.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ElementKeyUp(object sender, KeyRoutedEventArgs e)
         {
             if (Command != null && e.Key == VirtualKey.Enter)

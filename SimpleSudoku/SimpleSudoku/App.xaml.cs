@@ -54,15 +54,6 @@ namespace SC.SimpleSudoku
                 messageDialog.Commands.Add(new UICommand("Ok", command => Current.Exit()));
             }
 #endif
-
-#if DEBUG
-            if (!Database.Users.Any(x => x.Username == "TestUser"))
-                Database.Users.Add(new User
-                {
-                    Username = "TestUser",
-                    Password = "1234"
-                });
-#endif
             if (!Database.Users.Any(x => x.Username == "Sign in"))
                 Database.Users.Add(new User {Username = "Sign in", Password = null});
             if (!Database.BasePuzzles.Any())
