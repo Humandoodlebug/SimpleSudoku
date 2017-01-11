@@ -50,6 +50,7 @@ namespace SC.SimpleSudoku.ViewModels
         private int _selectedColumn = -1;
         private int _selectedRow = -1;
         private User[] _user;
+        private string _changePasswordErrorMessage;
 
         public MainViewModel()
         {
@@ -299,6 +300,18 @@ namespace SC.SimpleSudoku.ViewModels
         }
 
         public ICommand ShowUserLeaderboardCommand => new DelegateCommand(obj => ShowUserLeaderboard());
+
+        public string ChangePasswordErrorMessage
+        {
+            get { return _changePasswordErrorMessage; }
+            private set
+            {
+                if (value == _changePasswordErrorMessage)
+                    return;
+                _changePasswordErrorMessage = value;
+                OnPropertyChanged();
+            }
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -644,7 +657,7 @@ namespace SC.SimpleSudoku.ViewModels
                                                   (CurrentUser.NumPuzzlesSolved + 1);
             //Update the user's average score:
             CurrentUser.AverageScore = (CurrentUser.AverageScore * CurrentUser.NumPuzzlesSolved +
-                                        (double) CurrentPuzzle.BasePuzzle.Difficulty) /
+                                        PreviousAttempt.Score) /
                                        (CurrentUser.NumPuzzlesSolved + 1);
             //Update the user's average solving time:
             CurrentUser.AverageSolvingTime =
@@ -666,14 +679,26 @@ namespace SC.SimpleSudoku.ViewModels
         /// </summary>
         private void ChangePassword()
         {
-            //TODO: Add error message displaying stuff for changing passwords here.
             if (ChangePasswordBox1 != ChangePasswordBox2)
+            {
+                ChangePasswordErrorMessage = "Sorry, these passwords don't match!\rPlease try again.";
                 return;
+            }
+
             if (!IsPasswordValid(ChangePasswordBox1))
+            {
+                ChangePasswordErrorMessage =
+                    "The password must be between 6 and 42 characters,\rcontaining upper case letters, lower case letters and numbers.";
                 return;
-            if (Database.OldPasswords.Any(x => x.Username == CurrentUser.Username && x.OldPassword == ChangePasswordBox1))
+            }
+            if (ChangePasswordBox1 == CurrentUser.Password || Database.OldPasswords.Any(x => x.Username == CurrentUser.Username && x.OldPassword == ChangePasswordBox1))
+            {
+                ChangePasswordErrorMessage = "You’ve already used that password:\rYou must choose a new password.";
                 return;
+            }
+            Database.Add(new Old_Password {Username = CurrentUser.Username, OldPassword = CurrentUser.Password});
             CurrentUser.Password = ChangePasswordBox1;
+            ChangePasswordErrorMessage = "Password changed!";
             Database.SaveChanges();
         }
 
@@ -772,7 +797,7 @@ namespace SC.SimpleSudoku.ViewModels
                          (!EnteredPassword.Any(char.IsDigit) && EnteredPassword.Any(char.IsSymbol)))*/
             #endregion
 
-            else if (IsPasswordValid(EnteredPassword))
+            else if (!IsPasswordValid(EnteredPassword))
             {
                 LoginErrorMessage =
                     "The password must be between 6 and 42 characters, containing upper case letters, lower case letters and numbers or symbols.";
@@ -792,8 +817,8 @@ namespace SC.SimpleSudoku.ViewModels
 
         private bool IsPasswordValid(string password)
         {
-            return string.IsNullOrEmpty(password) ||
-                   !Regex.IsMatch(password, @"^(?=.*(\d|\W))(?=.*[a-z])(?=.*[A-Z])(?!.*\s).{6,40}$");
+            return (!string.IsNullOrEmpty(password) &&
+                   Regex.IsMatch(password, @"^(?=.*(\d|\W))(?=.*[a-z])(?=.*[A-Z])(?!.*\s).{6,40}$"));
         }
 
         private void SignIn()
