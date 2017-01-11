@@ -16,14 +16,20 @@ namespace SC.SimpleSudoku
         Insane
     }
 
+    /// <summary>
+    /// This is for interfacing with the database
+    /// </summary>
     public class SudokuDataContext : DbContext
     {
+        //These 'DbSets' represent tables in the database. Inside the angle brackets (<>) are the names of some classes that hold properties pertaining to fields in the database. This way, data can be accessed through code and the database can be created 'code-first'.
         public DbSet<User> Users { get; set; }
-        public DbSet<Old_Password> OldPasswords { get; set; }
         public DbSet<Puzzle> Puzzles { get; set; }
+        public DbSet<BasePuzzle> BasePuzzles { get; set; }
+        public DbSet<Mistake> Mistakes { get; set; }
         public DbSet<Puzzle_Attempt> PuzzleAttempts { get; set; }
-        public DbSet<Base_Puzzle> BasePuzzles { get; set;}
+        public DbSet<Old_Password> OldPasswords { get; set; }
 
+        //This method is called when the database is being configured. It tells Entity Framework that we will be using a SQLite database with the file name "SudokuAppData.db".
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlite("Filename=SudokuAppData.db");
@@ -31,64 +37,97 @@ namespace SC.SimpleSudoku
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Old_Password>().HasKey(x => new {x.UserUsername, x.OldPassword});
-            modelBuilder.Entity<Puzzle>().HasKey(x => x.Seed);
-            modelBuilder.Entity<Puzzle_Attempt>().HasKey(x => new {x.UserUsername,x.PuzzleSeed, x.AttemptNum});
+            modelBuilder.Entity<Old_Password>().HasKey(x => new {x.Username, x.OldPassword});
+            modelBuilder.Entity<Puzzle_Attempt>().HasKey(x => new { x.Username, x.PuzzleSeed, x.BasePuzzleID, x.AttemptNum });
+            modelBuilder.Entity<Mistake>().HasKey(x => new {x.Username, x.Row, x.Column});
+            modelBuilder.Entity<Puzzle>().HasKey(x => new {x.PuzzleSeed, x.BasePuzzleId});
             modelBuilder.Entity<User>().HasKey(x => x.Username);
-            modelBuilder.Entity<Base_Puzzle>().HasKey(x => x.ID);
+            modelBuilder.Entity<BasePuzzle>().HasKey(x => x.BasePuzzleID);
+            modelBuilder.Entity<Puzzle>().HasMany(x => x.PuzzleAttempts).WithOne(x => x.Puzzle).HasForeignKey(x => new {x.PuzzleSeed, x.BasePuzzleID});
+            modelBuilder.Entity<User>()
+                .HasMany(x => x.CurrentPuzzleMistakes)
+                .WithOne(x => x.User)
+                .HasForeignKey(x => x.Username);
+            
+
         }
     }
 
-    [Table(nameof(User))]
     public class User
     {
         [Key] public string Username { get; set; }
         public string Password { get; set; }
         public int NumPuzzlesSolved { get; set; }
-        public DateTime AverageSolvingTime { get; set; }
-        public int AveragePuzzleDifficulty { get; set; }
-        public int AverageScore { get; set; }
+        public TimeSpan AverageSolvingTime { get; set; }
+        public double AveragePuzzleDifficulty { get; set; }
+        public double AverageScore { get; set; }
         public long TotalScore { get; set; }
         public int CurrentPuzzleSeed { get; set; }
         public string CurrentPuzzleData { get; set; }
-        public bool IsMistakeHighlightingActive { get; set; }
-        public bool IsLeaderboardVisible { get; set; }
-        public bool IsPuzzleTimerVisible { get; set; }
-        public List<Puzzle_Attempt> PuzzleAttempts { get; set; }
+        public bool IsMistakeHighlightingOn { get; set; } = true;
+        public bool IsLeaderboardVisible { get; set; } = true;
+        public bool IsPuzzleTimerVisible { get; set; } = true;
+        public virtual ICollection<Puzzle_Attempt> PuzzleAttempts { get; set; }
+        public virtual ICollection<Old_Password> OldPasswords { get; set; }
+        public int CurrentBasePuzzleId { get; set; }
+        public TimeSpan CurrentSolvingTime { get; set; }
+        public virtual ICollection<Mistake> CurrentPuzzleMistakes { get; set; }
+        public DateTime CurrentPuzzleStartTime { get; set; }
     }
 
-    [Table(nameof(Old_Password))]
+
     public class Old_Password
     {
-        [Key, ForeignKey(nameof(User))] public string UserUsername { get; set; }
-        [Key] public string OldPassword { get; set; }
+        public string Username { get; set; }
+        public string OldPassword { get; set; }
+        public User User { get; set; }
     }
 
-    [Table(nameof(Puzzle))]
+
     public class Puzzle
     {
-        [Key] public int Seed { get; set; }
-        public PuzzleDifficulty Difficulty { get; set; }
-        public List<Puzzle_Attempt> PuzzleAttempts { get; set; }
+        public int PuzzleSeed { get; set; }
+        public int BasePuzzleId { get; set; }
+        public virtual ICollection<Puzzle_Attempt> PuzzleAttempts { get; set; }
     }
 
-    [Table(nameof(Puzzle_Attempt))]
+
     public class Puzzle_Attempt
     {
-        [Key, ForeignKey(nameof(User))] public string UserUsername { get; set; }
-        [Key, ForeignKey(nameof(Puzzle))] public int PuzzleSeed { get; set; }
-        [Key] public int AttemptNum { get; set; }
+        public string Username { get; set; }
+        public int PuzzleSeed { get; set; }
+        public int AttemptNum { get; set; }
         public DateTime DateTimeAttempted { get; set; }
         public DateTime DateTimeCompleted { get; set; }
         public TimeSpan SolvingTime { get; set; }
         public int MistakeCount { get; set; }
         public int Score { get; set; }
+        public int BasePuzzleID { get; set; }
+
+        
+        public Puzzle Puzzle { get; set; }
+
+        [ForeignKey(nameof(BasePuzzleID))]
+        public BasePuzzle BasePuzzle { get; set; }
     }
 
-    public class Base_Puzzle
+    public class BasePuzzle
     {
-        [Key] public int ID { get; set; }
-        public int Difficulty { get; set; }
-        public int[,] PuzzleData;
+        [Key] public int BasePuzzleID { get; set; }
+        public PuzzleDifficulty Difficulty { get; set; }
+        public string PuzzleProblemData { get; set; }
+        public string PuzzleSolutionData { get; set; }
+
+        public virtual ICollection<Puzzle_Attempt> PuzzleAttempts { get; set; }
+    }
+
+    public class Mistake
+    {
+        public string Username { get; set; }
+        public int Row { get; set; }
+        public int Column { get; set; }
+
+        [ForeignKey(nameof(Username))]
+        public User User { get; set; }
     }
 }
