@@ -338,7 +338,9 @@ namespace SC.SimpleSudoku.ViewModels
                     PuzzleTimer?.Stop();
         }
 
-        //Reveals the correct answer for the selected cell.
+        /// <summary>
+        /// Reveals the correct answer for the selected cell.
+        /// </summary>
         private void Reveal()
         {
             if (_selectedRow == -1 || _selectedColumn == -1)
@@ -353,7 +355,9 @@ namespace SC.SimpleSudoku.ViewModels
                 CompletePuzzle();
         }
 
-        //Goes to the main menu.
+        /// <summary>
+        /// Displays the main menu.
+        /// </summary>
         private void GoHome()
         {
             CurrentNavState.RecordView();
