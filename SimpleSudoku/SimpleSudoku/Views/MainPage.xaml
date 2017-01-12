@@ -122,7 +122,7 @@
                 </Grid>
             </ScrollViewer>
 
-            <ContentControl Grid.Row="3" HorizontalAlignment="Center" HorizontalContentAlignment="Stretch"
+            <ContentControl Grid.Row="3" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
                             ContentTemplate="{StaticResource PuzzleTouchEntryPanel}" Content="{Binding}" />
         </Grid>
 
