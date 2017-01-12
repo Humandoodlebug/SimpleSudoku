@@ -61,8 +61,8 @@
                     <AppBarButton Icon="View" Label="Reveal" Command="{Binding RevealCommand}" />
                 </CommandBar.PrimaryCommands>
             </CommandBar>
-            <TextBlock HorizontalAlignment="Left" Margin="50,50,0,0" Grid.Row="1" TextWrapping="Wrap"
-                       Text="{Binding PuzzleTimer.TimerString}" FontSize="50" VerticalAlignment="Top"
+            <TextBlock HorizontalAlignment="Left" Margin="50,30,0,0" Grid.Row="1" TextWrapping="Wrap"
+                       Text="{Binding PuzzleTimer.TimerString}" FontSize="35" VerticalAlignment="Top"
                        Visibility="{Binding Options.IsPuzzleTimerVisible, Converter={StaticResource BooleanToVisibilityConverter}}" />
 
             <ScrollViewer Grid.Row="2" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
@@ -122,8 +122,8 @@
                 </Grid>
             </ScrollViewer>
 
-            <ContentControl Grid.Row="3" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
-                            Margin="10,20" ContentTemplate="{StaticResource PuzzleTouchEntryPanel}" Content="{Binding}" />
+            <ContentControl Grid.Row="3" HorizontalAlignment="Center" HorizontalContentAlignment="Stretch"
+                            ContentTemplate="{StaticResource PuzzleTouchEntryPanel}" Content="{Binding}" />
         </Grid>
 
         <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
