@@ -16,8 +16,14 @@ using SC.SimpleSudoku.Model;
 
 namespace SC.SimpleSudoku.ViewModels
 {
+    /// <summary>
+    ///     Contains properties to be bound to by the User Interface in the MainPage.xaml file.
+    /// </summary>
     internal sealed class MainViewModel : INotifyPropertyChanged
     {
+        /// <summary>
+        ///     The default user. Used when no user is signed in.
+        /// </summary>
         private static readonly User DefaultUser = new User
         {
             Username = "Sign in",
@@ -26,9 +32,12 @@ namespace SC.SimpleSudoku.ViewModels
             IsLeaderboardVisible = false
         };
 
+        //Backing fields for properties:
+
         private ObservableCollection<ObservableCollection<CellViewModel>> _cells;
         private string _changePasswordBox1;
         private string _changePasswordBox2;
+        private string _changePasswordErrorMessage;
 
         private NavigationState _currentNavState;
 
@@ -50,17 +59,27 @@ namespace SC.SimpleSudoku.ViewModels
         private int _selectedColumn = -1;
         private int _selectedRow = -1;
         private User[] _user;
-        private string _changePasswordErrorMessage;
 
+        /// <summary>
+        ///     The MainViewModel constructor. Runs when the app starts.
+        /// </summary>
         public MainViewModel()
         {
+            //Initialise the navigation state, so that the main menu is displayed.
             CurrentNavState = new NavigationState();
+
+            //Add an event handler to handle when the navigation state changes.
             CurrentNavState.PropertyChanged += CurrentNavState_PropertyChanged;
-#if DEBUG
-            if (DesignMode.DesignModeEnabled)
+#if DEBUG //Following if statement runs only in debug mode, to check if the designer is active:
+            if (DesignMode.DesignModeEnabled) //If in design mode, stop here.
                 return;
 #endif
+            //If not in design mode, carry on and do the database stuff:
+
+            //Open a connection to the database.
             Database = new SudokuDataContext();
+
+            //Add handlers to the Suspending and Resuming events.
             Application.Current.Suspending += OnSuspending;
             Application.Current.Resuming += OnResuming;
 
@@ -80,8 +99,12 @@ namespace SC.SimpleSudoku.ViewModels
             //};
         }
 
+        //Enable the continue button if the user has a saved puzzle in the database.
         public bool IsContinuePuzzleButtonEnabled => !string.IsNullOrEmpty(CurrentUser.CurrentPuzzleData);
 
+        /// <summary>
+        ///     A simple stopwatch. Records the time elapsed while solving the current puzzle.
+        /// </summary>
         public PuzzleTimerViewModel PuzzleTimer
         {
             get { return _puzzleTimer; }
@@ -92,34 +115,50 @@ namespace SC.SimpleSudoku.ViewModels
             }
         }
 
-        public Sudoku CurrentPuzzle { get; set; }
+        /// <summary>
+        ///     Holds data about the puzzle currently being solved.
+        /// </summary>
+        private Sudoku CurrentPuzzle { get; set; }
 
+        /// <summary>
+        ///     Gets the current puzzle as a simple byte array.
+        /// </summary>
         private byte[,] CurrentPuzzleData
         {
             get
             {
+                //Iterates through every cell and adds its contents to the correct position in the byte array.
                 var data = new byte[Cells.Count, Cells[0].Count];
                 for (var i = 0; i < data.GetLength(0); i++)
                 for (var j = 0; j < data.GetLength(1); j++)
                     if (Cells[i][j].Content != null)
                         data[i, j] = Cells[i][j].Content.Value;
-                    else data[i, j] = 0;
+                    else data[i, j] = 0; //If the content is null, use 0 instead.
                 return data;
             }
         }
 
+        /// <summary>
+        ///     The current puzzle data. Bound to by the puzzle solving User Interface.
+        /// </summary>
         public ObservableCollection<ObservableCollection<CellViewModel>> Cells
         {
             get { return _cells; }
-            set
+            private set
             {
                 _cells = value;
                 OnPropertyChanged();
             }
         }
 
+        /// <summary>
+        ///     Stores the current data context for the database.
+        /// </summary>
         private SudokuDataContext Database { get; }
 
+        /// <summary>
+        ///     Bound to the contents of the username field on the login flyout.
+        /// </summary>
         public string EnteredUsername
         {
             get { return _enteredUsername; }
@@ -132,6 +171,9 @@ namespace SC.SimpleSudoku.ViewModels
             }
         }
 
+        /// <summary>
+        ///     Bound to the contents of the password field on the login flyout.
+        /// </summary>
         public string EnteredPassword
         {
             get { return _enteredPassword; }
@@ -144,6 +186,9 @@ namespace SC.SimpleSudoku.ViewModels
             }
         }
 
+        /// <summary>
+        ///     Exposes properties bound to by controls on the options page.
+        /// </summary>
         public OptionsViewModel Options
         {
             get { return _options; }
@@ -156,10 +201,14 @@ namespace SC.SimpleSudoku.ViewModels
             }
         }
 
+        /// <summary>
+        ///     Exposes information about the current view to the UI, along with the navigation state history to make the back
+        ///     button work.
+        /// </summary>
         public NavigationState CurrentNavState
         {
             get { return _currentNavState; }
-            set
+            private set
             {
                 if (_currentNavState == value)
                     return;
@@ -168,16 +217,22 @@ namespace SC.SimpleSudoku.ViewModels
             }
         }
 
+        /// <summary>
+        ///     Exposes information about the currently signed in user to the UI.
+        /// </summary>
         public UserViewModel CurrentUser
         {
             get { return _currentUser; }
-            set
+            private set
             {
                 _currentUser = value;
                 OnPropertyChanged();
             }
         }
 
+        /// <summary>
+        ///     Returns true if a user is signed in and false otherwise.
+        /// </summary>
         public bool IsSignedIn
         {
             get { return _isSignedIn; }
@@ -190,15 +245,27 @@ namespace SC.SimpleSudoku.ViewModels
             }
         }
 
+
+        //Some commands to trigger methods when events are raised in the UI.
+        //See the methods they trigger for comments on their purposes.
         public ICommand NewPuzzleCommand => new DelegateCommand(obj => GotoNewPuzzle());
-
         public ICommand OptionsCommand => new DelegateCommand(obj => GotoOptions());
-
         public ICommand SignInCommand => new DelegateCommand(obj => SignIn());
         public ICommand SignUpCommand => new DelegateCommand(obj => SignUp());
-
+        // ReSharper disable once UnusedMember.Global
         public ICommand SetValueCommand => new DelegateCommand(obj => SetValue(byte.Parse((string) obj)));
+        public ICommand SignOutCommand => new DelegateCommand(obj => SignOut());
+        public ICommand ChangePasswordCommand => new DelegateCommand(obj => ChangePassword());
+        public ICommand ShowPuzzleCommand => new DelegateCommand(obj => GeneratePuzzle((string) obj));
+        public ICommand GoHomeCommand => new DelegateCommand(obj => GoHome());
+        public ICommand ContinuePuzzleCommand => new DelegateCommand(obj => ContinuePuzzle());
+        public ICommand RevealCommand => new DelegateCommand(obj => Reveal());
+        public ICommand ShowUserLeaderboardCommand => new DelegateCommand(obj => ShowUserLeaderboard());
 
+        /// <summary>
+        ///     Exposes the error message to be displayed on the Login flyout. Set to string.Empty or null if no error message is
+        ///     displayed.
+        /// </summary>
         public string LoginErrorMessage
         {
             get { return _loginErrorMessage; }
@@ -211,8 +278,9 @@ namespace SC.SimpleSudoku.ViewModels
             }
         }
 
-        public ICommand SignOutCommand => new DelegateCommand(obj => SignOut());
-
+        /// <summary>
+        ///     Holds the contents of the first text box in the Change Password flyout.
+        /// </summary>
         public string ChangePasswordBox1
         {
             get { return _changePasswordBox1; }
@@ -225,6 +293,9 @@ namespace SC.SimpleSudoku.ViewModels
             }
         }
 
+        /// <summary>
+        ///     Holds the contents of the second text box in the Change Password flyout.
+        /// </summary>
         public string ChangePasswordBox2
         {
             get { return _changePasswordBox2; }
@@ -237,8 +308,10 @@ namespace SC.SimpleSudoku.ViewModels
             }
         }
 
-        public ICommand ChangePasswordCommand => new DelegateCommand(obj => ChangePassword());
-
+        /// <summary>
+        ///     Bound to by the UI. Returns true if pencil mode is active, and false otherwise.
+        ///     Toggled by pencil mode (note mode) app bar button.
+        /// </summary>
         public bool IsInPencilMode
         {
             get { return _isInPencilMode; }
@@ -249,9 +322,11 @@ namespace SC.SimpleSudoku.ViewModels
             }
         }
 
-        public ICommand ShowPuzzleCommand => new DelegateCommand(obj => GeneratePuzzle((string) obj));
 
-        public int? EnteredSeed
+        /// <summary>
+        ///     Bound to by the UI. Holds the seed entered by the user when generating a puzzle.
+        /// </summary>
+        public int? EnteredSeed //The ? means 'nullable'.
         {
             get { return _enteredSeed; }
             set
@@ -263,22 +338,23 @@ namespace SC.SimpleSudoku.ViewModels
             }
         }
 
-        public ICommand GoHomeCommand => new DelegateCommand(obj => GoHome());
-
-        public ICommand ContinuePuzzleCommand => new DelegateCommand(obj => ContinuePuzzle());
-
-        public ICommand RevealCommand => new DelegateCommand(obj => Reveal());
-
+        /// <summary>
+        ///     Bound to by the UI. Stores an array of users to be displayed on the user leaderboard.
+        /// </summary>
         public User[] UserLeaderboard
         {
             get { return _user; }
-            set
+            private set
             {
                 _user = value;
                 OnPropertyChanged();
             }
         }
 
+        /// <summary>
+        ///     Bound to by the UI. Stores a list of attempts for the current puzzle.
+        ///     Displayed on the puzzle leaderboard.
+        /// </summary>
         public List<Puzzle_Attempt> PuzzleAttempts
         {
             get { return _puzzleAttempts; }
@@ -289,18 +365,23 @@ namespace SC.SimpleSudoku.ViewModels
             }
         }
 
+        /// <summary>
+        ///     Bound to by the UI. Holds the puzzle attempt that has just been completed (if any, null otherwise).
+        /// </summary>
         public Puzzle_Attempt PreviousAttempt
         {
             get { return _previousAttempt; }
-            set
+            private set
             {
                 _previousAttempt = value;
                 OnPropertyChanged();
             }
         }
 
-        public ICommand ShowUserLeaderboardCommand => new DelegateCommand(obj => ShowUserLeaderboard());
-
+        /// <summary>
+        ///     Holds the error message, if any, to be displayed in the Change Password flyout.
+        ///     Set to null or string.Empty if there is no error message to be displayed.
+        /// </summary>
         public string ChangePasswordErrorMessage
         {
             get { return _changePasswordErrorMessage; }
@@ -313,8 +394,15 @@ namespace SC.SimpleSudoku.ViewModels
             }
         }
 
+        /// <summary>
+        ///     An event Subscribed to by event handlers in the UWP UI Framework.
+        ///     Invoked when a bound property changes through the OnPropertyChanged() procedure.
+        /// </summary>
         public event PropertyChangedEventHandler PropertyChanged;
 
+        /// <summary>
+        ///     Generates and displays the User Leaderboard when the 'Leaderboard' button is clicked.
+        /// </summary>
         private void ShowUserLeaderboard()
         {
             //Select the users from the database who have completed at least 3 puzzles, ordering them by score in descending order:
@@ -329,44 +417,65 @@ namespace SC.SimpleSudoku.ViewModels
             CurrentNavState.CurrentView = NavigationState.View.UserLeaderboard;
         }
 
+        /// <summary>
+        ///     Subscribed to the PropertyChanged event in the constructor.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void CurrentNavState_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(CurrentNavState.CurrentView))
-                if (CurrentNavState.CurrentView == NavigationState.View.Solving)
-                    PuzzleTimer?.Start();
-                else
-                    PuzzleTimer?.Stop();
+            //If the property that has changed isn't the CurrentView property, do nothing.
+            if (e.PropertyName != nameof(CurrentNavState.CurrentView)) return;
+            //If the user has just started/continued solving a puzzle, start the puzzle timer.
+            if (CurrentNavState.CurrentView == NavigationState.View.Solving)
+                PuzzleTimer?.Start();
+            else //Otherwise, stop the puzzle timer.
+                PuzzleTimer?.Stop();
         }
 
         /// <summary>
-        /// Reveals the correct answer for the selected cell.
+        ///     Reveals the correct answer for the selected cell.
+        ///     Triggered when the 'Reveal' button is pressed.
         /// </summary>
         private void Reveal()
         {
+            //If no row is selected, do nothing.
             if (_selectedRow == -1 || _selectedColumn == -1)
                 return;
+            //Set IsWrong to true to ensure the cell is on the mistakes list.
             Cells[_selectedRow][_selectedColumn].IsWrong = true;
+            //Set the selected cell's content to the byte in the cell's position in the solution data, revealig the correct answer.
             Cells[_selectedRow][_selectedColumn].Content = CurrentPuzzle.SolutionData[_selectedRow, _selectedColumn];
+            //Set IsWrong to false to remove red outline.
             Cells[_selectedRow][_selectedColumn].IsWrong = false;
+            //Make the cell read only, so it is obvious the correct answer has been revealed and cannot be changed.
             Cells[_selectedRow][_selectedColumn].IsReadOnly = true;
+            //Deselect the cell.
             _selectedRow = -1;
             _selectedColumn = -1;
+            //If all cells are filled in correctly, end the game.
             if (Cells.All(x => x.All(y => !y.IsWrong && y.Content != null)))
                 CompletePuzzle();
         }
 
         /// <summary>
-        /// Displays the main menu.
+        ///     Displays the main menu when the Home app bar button is clicked.
         /// </summary>
         private void GoHome()
         {
+            //Record the current navigation state, so it can be restored with the back button.
             CurrentNavState.RecordView();
+
             var previousView = CurrentNavState.CurrentView;
+            //Display the Main Menu.
             CurrentNavState.CurrentView = NavigationState.View.MainMenu;
+
+            //If the user was solving a puzzle then save it.
             if (previousView == NavigationState.View.Solving)
             {
                 SavePuzzle();
             }
+            //If the user was looking at a leaderboard then clear the current puzzle data, since they have just solved it.
             else if (previousView == NavigationState.View.PuzzleLeaderboard)
             {
                 CurrentUser.CurrentPuzzleData = null;
@@ -375,29 +484,37 @@ namespace SC.SimpleSudoku.ViewModels
             }
         }
 
+        /// <summary>
+        ///     Converts the current puzzle from a string stored in the database to a two dimensional array of bytes.
+        /// </summary>
+        /// <param name="puzzleString">The string to be converted.</param>
+        /// <returns>A byte array representing the current puzzle.</returns>
         private byte[,] LoadPuzzleBytes(string puzzleString)
         {
             var puzzleStrings = puzzleString.Split(' ');
             var puzzleBytes = new byte[9, 9];
             for (var i = 0; i < 9; i++)
             for (var j = 0; j < 9; j++)
-            {
                 puzzleBytes[i, j] = byte.Parse(puzzleStrings[i][j].ToString());
-            }
             return puzzleBytes;
         }
 
+        /// <summary>
+        ///     Opens the puzzle last saved by the user.
+        /// </summary>
         private void ContinuePuzzle()
         {
+            //Ensure no cell is selected.
             _selectedRow = -1;
             _selectedColumn = -1;
+            //Generate the current puzzle sudoku object.
             CurrentPuzzle =
                 new Sudoku(Database.BasePuzzles.Single(x => x.BasePuzzleID == CurrentUser.CurrentBasePuzzleID),
                     CurrentUser.CurrentPuzzleSeed);
+
+            //Load the current puzzle data into the UI.
             var puzzleData = LoadPuzzleBytes(CurrentUser.CurrentPuzzleData);
             Cells = new ObservableCollection<ObservableCollection<CellViewModel>>();
-            if (CurrentUser.CurrentUser.CurrentPuzzleMistakes == null)
-                CurrentUser.CurrentUser.CurrentPuzzleMistakes = new List<Mistake>();
             for (var i = 0; i < 9; i++)
             {
                 var row = new ObservableCollection<CellViewModel>();
@@ -419,17 +536,24 @@ namespace SC.SimpleSudoku.ViewModels
                 }
                 Cells.Add(row);
             }
+            //Create the puzzle timer, setting its timespan to the time already elapsed from the database.
             PuzzleTimer = new PuzzleTimerViewModel(CurrentUser.CurrentUser)
             {
                 CurrenTimeSpan = CurrentUser.CurrentSolvingTime
             };
+            //Record the current navigation state (for back button functionality) and show the solving page.
             CurrentNavState.RecordView();
             CurrentNavState.CurrentView = NavigationState.View.Solving;
         }
 
+        /// <summary>
+        /// Generates a Sudoku puzzle when a difficulty is selected from the 'New Puzzle' menu.
+        /// </summary>
+        /// <param name="difficulty">The difficulty sudoku puzzle to generate.</param>
         private void GeneratePuzzle(string difficulty)
         {
             BasePuzzle[] basePuzzles;
+            //Get a list of base puzzles of difficulty selected by the user.
             switch (difficulty)
             {
                 case "Easy":
@@ -448,34 +572,51 @@ namespace SC.SimpleSudoku.ViewModels
                     throw new ArgumentOutOfRangeException();
             }
 
+            //If no seed is entered, generate a random seed.
             if (EnteredSeed == null)
                 EnteredSeed = new Random().Next();
 
+            //Select a base puzzle from the retrieved list of base puzzles from the database.
             var basePuzzle = basePuzzles[EnteredSeed.Value % basePuzzles.Length];
+            //Set the current puzzle using the obtained parameters (seed, base puzzle).
             CurrentPuzzle = new Sudoku(basePuzzle, EnteredSeed);
+            //Clear the database of mistakes made in any previous puzzle by the current user.
             Database.RemoveRange(Database.Mistakes.Where(x => x.Username == CurrentUser.Username));
 
+            //If a puzzle with this seed isn't already in the database, add it.
             if (!Database.Puzzles.Any(x => x.PuzzleSeed == CurrentPuzzle.Seed))
                 Database.Puzzles.Add(new Puzzle
                 {
                     BasePuzzleId = basePuzzle.BasePuzzleID,
                     PuzzleSeed = CurrentPuzzle.Seed
                 });
+            //Create a puzzle timer to keep track of elapsed solving time.
             PuzzleTimer = new PuzzleTimerViewModel(CurrentUser.CurrentUser);
+            //Display the puzzle solving UI.
             DisplayPuzzle();
+            //Record the time the user started the puzzle in the database.
             CurrentUser.CurrentUser.CurrentPuzzleStartTime = DateTime.Now;
             Database.SaveChanges();
+            //Start the puzzle timer.
             PuzzleTimer.Start();
         }
 
+        /// <summary>
+        /// Displays the puzzle on the solving page for the user to start solving.
+        /// </summary>
         private void DisplayPuzzle()
         {
+            //Clear the Cells collection for a new puzzle to be added.
             Cells = new ObservableCollection<ObservableCollection<CellViewModel>>();
+            //Iterate through all 9 rows of the puzzle
             for (var i = 0; i < 9; i++)
             {
+                //Create a new row.
                 var row = new ObservableCollection<CellViewModel>();
+                //Iterate through all 9 columns of the puzzle.
                 for (var j = 0; j < 9; j++)
                 {
+                    //Create a cell based on the puzzle problem data.
                     var isReadOnly = true;
                     byte? content = CurrentPuzzle.ProblemData[i, j];
                     if (content == 0)
@@ -483,28 +624,43 @@ namespace SC.SimpleSudoku.ViewModels
                         content = null;
                         isReadOnly = false;
                     }
+                    //Add the cell to the row.
                     row.Add(new CellViewModel(Options, i, j, CellSelectedHandler, content, isReadOnly, Database.Mistakes,
                         false, CurrentUser.Username, Database));
                 }
+                //Add the row to the Cells collection.
                 Cells.Add(row);
             }
+            //Switch to the solving page.
             CurrentNavState.CurrentView = NavigationState.View.Solving;
         }
 
+        /// <summary>
+        /// Handles the cell selection event.
+        /// </summary>
+        /// <param name="sender">The cell triggering the cell selection event.</param>
+        /// <param name="row">The row of the cell in the puzzle.</param>
+        /// <param name="column">The column of the cell in the puzzle.</param>
         private void CellSelectedHandler(object sender, int row, int column)
         {
+            //If the cell is read only, deselect it and skip the rest (read only cells cannot be selected).
             if (Cells[row][column].IsReadOnly)
             {
                 Cells[row][column].IsSelected = false;
                 return;
             }
+            //If a cell is already selected then deselect it.
             if (_selectedRow != -1 && _selectedColumn != -1)
                 Cells[_selectedRow][_selectedColumn].IsSelected = false;
+            //Mark the selected cell as selected.
             _selectedRow = row;
             _selectedColumn = column;
             Cells[_selectedRow][_selectedColumn].IsSelected = true;
         }
 
+        /// <summary>
+        /// Generates and displays the puzzle leaderboard after a puzzle has been completed.
+        /// </summary>
         private void ShowPuzzleLeaderboard()
         {
             //Get all the puzzle attempts for the current puzzle:
@@ -681,27 +837,38 @@ namespace SC.SimpleSudoku.ViewModels
         /// </summary>
         private void ChangePassword()
         {
+            //If the passwords don't match, display an error message.
             if (ChangePasswordBox1 != ChangePasswordBox2)
             {
                 ChangePasswordErrorMessage = "Sorry, these passwords don't match!\rPlease try again.";
-                return;
             }
 
-            if (!IsPasswordValid(ChangePasswordBox1))
+            //if the password is not valid, display an error message.
+             else if (!IsPasswordValid(ChangePasswordBox1))
             {
                 ChangePasswordErrorMessage =
                     "The password must be between 6 and 42 characters,\rcontaining upper case letters, lower case letters and numbers.";
-                return;
             }
-            if (ChangePasswordBox1 == Encryption.Decrypt(CurrentUser.Password) || Database.OldPasswords.Any(x => x.Username == CurrentUser.Username && Encryption.Decrypt(x.OldPassword) == ChangePasswordBox1))
+            //If the password entered is the same as the current password or a password previously used by the current user, display an error message.
+             else if (ChangePasswordBox1 == Encryption.Decrypt(CurrentUser.Password) ||
+                      Database.OldPasswords.Any(
+                          x =>
+                              x.Username == CurrentUser.Username &&
+                              Encryption.Decrypt(x.OldPassword) == ChangePasswordBox1))
             {
                 ChangePasswordErrorMessage = "You’ve already used that password:\rYou must choose a new password.";
-                return;
             }
-            Database.Add(new Old_Password {Username = CurrentUser.Username, OldPassword = CurrentUser.Password});
-            CurrentUser.Password = Encryption.Encrypt(ChangePasswordBox1);
-            ChangePasswordErrorMessage = "Password changed!";
-            Database.SaveChanges();
+            //If the password checks out (no error messages are displayed) then continue.
+            else
+            {
+                //Add the current password to the old passwords list.
+                Database.Add(new Old_Password {Username = CurrentUser.Username, OldPassword = CurrentUser.Password});
+                //Set the user's password in the database to the newly entered password (encrypted)
+                CurrentUser.Password = Encryption.Encrypt(ChangePasswordBox1);
+                //Display a helpful message instead of an error.
+                ChangePasswordErrorMessage = "Password changed!";
+                Database.SaveChanges();
+            }
         }
 
         /// <summary>
@@ -782,10 +949,12 @@ namespace SC.SimpleSudoku.ViewModels
         /// </summary>
         private async void SignUp()
         {
+            //If the username isn't valid, display an error message.
             if (string.IsNullOrEmpty(EnteredUsername) || !Regex.IsMatch(EnteredUsername, @"^.{3,20}$"))
             {
                 LoginErrorMessage = "The username must be between 3 and 20 characters.";
             }
+            //If a user with this username already exists in the database, display an error message.
             else if (
                 Database.Users.Any(
                     x => string.Equals(x.Username, EnteredUsername, StringComparison.CurrentCultureIgnoreCase)))
@@ -799,11 +968,13 @@ namespace SC.SimpleSudoku.ViewModels
                          (!EnteredPassword.Any(char.IsDigit) && EnteredPassword.Any(char.IsSymbol)))*/
             #endregion
 
-            else if (!IsPasswordValid(EnteredPassword))
+            //If the password isn't valid, display an error message.
+            else if (string.IsNullOrEmpty(EnteredPassword) || !IsPasswordValid(EnteredPassword))
             {
                 LoginErrorMessage =
                     "The password must be between 6 and 42 characters, containing upper case letters, lower case letters and numbers or symbols.";
             }
+            //Create a new user account with the specified username and password, adding it to the database.
             else
             {
                 var user = new User
@@ -813,54 +984,79 @@ namespace SC.SimpleSudoku.ViewModels
                 };
                 Database.Users.Add(user);
                 await Database.SaveChangesAsync();
+                //Sign the user in.
                 SignIn();
             }
         }
 
+        /// <summary>
+        /// Checks if a password is valid.
+        /// </summary>
+        /// <param name="password">The password to be tested.</param>
+        /// <returns>Returns true if the password is valid, false otherwise.</returns>
         private bool IsPasswordValid(string password)
         {
-            return (!string.IsNullOrEmpty(password) &&
-                   Regex.IsMatch(password, @"^(?=.*(\d|\W))(?=.*[a-z])(?=.*[A-Z])(?!.*\s).{6,40}$"));
+            return !string.IsNullOrEmpty(password) &&
+                   Regex.IsMatch(password, @"^(?=.*(\d|\W))(?=.*[a-z])(?=.*[A-Z])(?!.*\s).{6,40}$");
         }
 
+        /// <summary>
+        /// Signs a user in. Triggered when a user selects the 'sign in' button on the 'sign in' flyout.
+        /// </summary>
         private void SignIn()
         {
+            //Get the user with the entered username from the database (if they exist), ignoring case.
             var user =
                 Database.Users
                     .SingleOrDefault(
                         x => string.Equals(x.Username, EnteredUsername, StringComparison.CurrentCultureIgnoreCase));
+            //If the username field is blank, display and error message.
             if (string.IsNullOrEmpty(EnteredUsername))
             {
                 LoginErrorMessage = "The username field cannot be left blank.";
             }
+            //If no user with this username was found in the database or the password entered doesn't match, display an error message.
             else if (user == null || Encryption.Decrypt(user.Password) != EnteredPassword)
             {
                 LoginErrorMessage = "Sorry, this username/password combination is not recognised, please try again.";
             }
+            //If the username and password match, sign the user in.
             else
             {
                 CurrentUser = new UserViewModel(user);
                 Options = new OptionsViewModel(user);
                 IsSignedIn = true;
+                //Clear the Username, password and error message boxes.
                 EnteredUsername = string.Empty;
                 EnteredPassword = string.Empty;
                 LoginErrorMessage = string.Empty;
             }
+            //Re-evaluate whether the current user has a saved puzzle in the database.
             OnPropertyChanged(nameof(IsContinuePuzzleButtonEnabled));
         }
 
+        /// <summary>
+        /// Displays the options page.
+        /// </summary>
         private void GotoOptions()
         {
             CurrentNavState.RecordView();
             CurrentNavState.CurrentView = NavigationState.View.Options;
         }
 
+        /// <summary>
+        /// Displays the New Puzzle menu.
+        /// </summary>
         private void GotoNewPuzzle()
         {
             CurrentNavState.RecordView();
             CurrentNavState.CurrentView = NavigationState.View.PuzzleDifficulty;
         }
 
+        /// <summary>
+        /// Called when the value of a property changes. Raises the PropertyChanged event to notify the UI that the value of a property it binds to has changed.
+        /// </summary>
+        /// <param name="propertyName">The name of the property whose value has changed.</param>
         private void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -872,14 +1068,18 @@ namespace SC.SimpleSudoku.ViewModels
         /// <param name="direction">The direction of the arrow key (Left is 0, Up is 1, Right is 2, Down is 3).</param>
         public void MoveSelection(int direction)
         {
+            //If no cell is selected, do nothing.
             if (_selectedRow == -1 || _selectedColumn == -1)
                 return;
+            //Record the starting position of the selection.
             var originalRow = _selectedRow;
             var originalColumn = _selectedColumn;
+            //Deselect the currently selected cell.
             Cells[_selectedRow][_selectedColumn].IsSelected = false;
             var breakOut = false;
             do
             {
+                //Move the selection in the direction of the arrow key pressed.
                 switch (direction)
                 {
                     case 0:
@@ -903,20 +1103,29 @@ namespace SC.SimpleSudoku.ViewModels
                         else breakOut = true;
                         break;
                 }
+                //If the selection has moved off the edge of the puzzle grid, move it back to where it started.
                 if (breakOut)
                 {
                     _selectedRow = originalRow;
                     _selectedColumn = originalColumn;
                     break;
                 }
+            //If the Cell selected is read only, move another cell in the same direction.
             } while
                 (Cells[_selectedRow][_selectedColumn].IsReadOnly);
-
+            //Mark the selected cell as selected.
             Cells[_selectedRow][_selectedColumn].IsSelected = true;
         }
 
+        /// <summary>
+        /// Holds the navigation state of the app (which page it is on) and exposes boolean visibilities for the UI to bind to.
+        /// Also handles the back butto functionality.
+        /// </summary>
         internal sealed class NavigationState : INotifyPropertyChanged
         {
+            /// <summary>
+            /// Allows for identification of each of the possible views/pages in the app.
+            /// </summary>
             public enum View
             {
                 MainMenu,
@@ -927,8 +1136,10 @@ namespace SC.SimpleSudoku.ViewModels
                 UserLeaderboard
             }
 
+            //Private backing fields.
             private View _currentView;
             private NavigationState _previousNavState;
+
 
             public View CurrentView
             {
@@ -939,6 +1150,7 @@ namespace SC.SimpleSudoku.ViewModels
                         return;
                     _currentView = value;
                     OnPropertyChanged();
+                    //Also Mark all the properties this may affect as changed.
                     OnPropertyChanged(nameof(IsMainMenuVisible));
                     OnPropertyChanged(nameof(IsPuzzleDifficultyVisible));
                     OnPropertyChanged(nameof(IsSolvingVisible));
@@ -947,7 +1159,7 @@ namespace SC.SimpleSudoku.ViewModels
                     OnPropertyChanged(nameof(IsUserLeaderboardVisible));
                 }
             }
-
+            //A group of properties indicating the visibility of each page in the app:
             public bool IsMainMenuVisible => CurrentView == View.MainMenu;
             public bool IsPuzzleDifficultyVisible => CurrentView == View.PuzzleDifficulty;
             public bool IsSolvingVisible => CurrentView == View.Solving;
@@ -955,10 +1167,11 @@ namespace SC.SimpleSudoku.ViewModels
             public bool IsPuzzleLeaderboardVisible => CurrentView == View.PuzzleLeaderboard;
             public bool IsUserLeaderboardVisible => CurrentView == View.UserLeaderboard;
 
+            //Holds the previous navigation state, for back button functionality.
             public NavigationState PreviousNavState
             {
                 get { return _previousNavState; }
-                set
+                private set
                 {
                     if (_previousNavState == value)
                         return;
@@ -966,15 +1179,24 @@ namespace SC.SimpleSudoku.ViewModels
                     OnPropertyChanged();
                 }
             }
-
-
+            /// <summary>
+            /// Raised when a property changes in this class. Mainly for properties bound to the UI.
+            /// </summary>
             public event PropertyChangedEventHandler PropertyChanged;
 
+            /// <summary>
+            /// Records the current navigation state.
+            /// Should be called before changing the current view/page for back button functionality.
+            /// </summary>
             public void RecordView()
             {
                 PreviousNavState = new NavigationState {PreviousNavState = PreviousNavState, CurrentView = CurrentView};
             }
 
+            /// <summary>
+            /// Reverts the navigation state to its previous state (goes back to the previous page).
+            /// </summary>
+            /// <returns>Returns true if the app was able to go back and false otherwise.</returns>
             public bool GoBack()
             {
                 if (PreviousNavState == null)
@@ -991,26 +1213,39 @@ namespace SC.SimpleSudoku.ViewModels
             /// <param name="propertyName">The name of the property whose value changed.</param>
             private void OnPropertyChanged([CallerMemberName] string propertyName = null)
             {
-                //Invokes the 'PropertyChanged' event (if it is not null, hence the '?' before 'Invoke') to notify Users 
+                //Invokes the 'PropertyChanged' event (if it is not null, hence the '?' before '.Invoke') to notify the UI that the property with name propertyName has changed.
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
             }
         }
     }
 
+    /// <summary>
+    /// A class to handle database password encryption.
+    /// </summary>
     internal static class Encryption
     {
         private const int Seed = 592;
 
+        /// <summary>
+        /// Encrypts the password to be stored in the database.
+        /// </summary>
+        /// <param name="s">The passwor to encrypt.</param>
+        /// <returns>The encrypted password.</returns>
         public static string Encrypt(string s)
         {
             var random = new Random(Seed);
-            return string.Join("", from c in s select (char)(c + random.Next(-30,30)));
+            return string.Join("", from c in s select (char) (c + random.Next(-30, 30)));
         }
 
+        /// <summary>
+        /// Deecrypts the password to be read from the database.
+        /// </summary>
+        /// <param name="s">The password to decrypt.</param>
+        /// <returns>The decrypted password.</returns>
         public static string Decrypt(string s)
         {
             var random = new Random(Seed);
-            return string.Join("", from c in s select (char)(c - random.Next(-30,30)));
+            return string.Join("", from c in s select (char) (c - random.Next(-30, 30)));
         }
     }
 }

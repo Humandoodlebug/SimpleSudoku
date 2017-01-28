@@ -9,14 +9,14 @@
 
     <converters:InvertBooleanConverter x:Key="InvertBooleanConverter" />
     <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    <converters:NullableIntConverter x:Key="NullableIntConverter"/>
+    <converters:TimeSpanToStringConverter x:Key="DateTimeToStringConverter"/>
 
     <Style TargetType="Button">
         <Setter Property="Background" Value="{StaticResource ApplicationPageBackgroundThemeBrush}" />
         <Setter Property="BorderThickness" Value="0" />
     </Style>
-
-    <converters:NullableIntConverter x:Key="NullableIntConverter"/>
-
+    
     <DataTemplate x:Key="CellTemplate">
         <Grid Margin="1" Width="50" Height="50">
             <Grid.RowDefinitions>

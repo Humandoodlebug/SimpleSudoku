@@ -197,7 +197,7 @@
                                 </StackPanel>
                                 <StackPanel Grid.Column="1">
                                     <TextBlock Text="{Binding CurrentUser.AverageScore}" Margin="5" />
-                                    <TextBlock Text="{Binding CurrentUser.AverageSolvingTimeString}" Margin="5" />
+                                    <TextBlock Text="{Binding CurrentUser.AverageSolvingTime, Converter={StaticResource DateTimeToStringConverter}, ConverterParameter=g}" Margin="5" />
                                     <TextBlock Text="{Binding CurrentUser.AveragePuzzleDifficulty}" Margin="5" />
                                     <TextBlock Text="{Binding CurrentUser.NumPuzzlesSolved}" Margin="5" />
                                 </StackPanel>
@@ -324,9 +324,9 @@
 
             <RelativePanel Grid.Row="1">
                 <TextBlock x:Name="SeedBox" Text="Seed: " />
-                <TextBlock RelativePanel.RightOf="SeedBox" Text="{Binding CurrentPuzzle.Seed}" />
+                <TextBlock RelativePanel.RightOf="SeedBox" Text="{Binding PreviousAttempt.PuzzleSeed}" />
                 <TextBlock x:Name="ScoreBox" RelativePanel.Below="SeedBox" Text="Score: " />
-                <TextBlock RelativePanel.RightOf="ScoreBox" Text="{Binding PreviousAttempt.Score}" />
+                <TextBlock RelativePanel.RightOf="ScoreBox" RelativePanel.Below="SeedBox" Text="{Binding PreviousAttempt.Score}" />
             </RelativePanel>
 
             <ScrollViewer Grid.Row="2" HorizontalScrollMode="Disabled" VerticalScrollBarVisibility="Auto"
@@ -339,7 +339,6 @@
                             <ColumnDefinition Width="2*" MinWidth="200" />
                             <ColumnDefinition Width="1*" MinWidth="50" />
                             <ColumnDefinition Width="2*" />
-                            <ColumnDefinition Width="2*" />
                         </Grid.ColumnDefinitions>
 
                         <TextBlock Grid.Column="0" Text="Username" Margin="5" />
@@ -347,7 +346,6 @@
                         <TextBlock Grid.Column="2" Text="Solving Time" Margin="5" />
                         <TextBlock Grid.Column="3" Text="# Mistakes" Margin="5" />
                         <TextBlock Grid.Column="4" Text="Start Time" Margin="5" />
-                        <TextBlock Grid.Column="5" Text="Finish Time" Margin="5" />
                     </Grid>
 
 
@@ -365,7 +363,7 @@
 
                                     <TextBlock Grid.Column="0" Text="{Binding Username}" Margin="5" />
                                     <TextBlock Grid.Column="1" Text="{Binding Score}" Margin="5" />
-                                    <TextBlock Grid.Column="2" Text="{Binding SolvingTime}" Margin="5" />
+                                    <TextBlock Grid.Column="2" Text="{Binding SolvingTime, Converter={StaticResource DateTimeToStringConverter}, ConverterParameter=g}" Margin="5" />
                                     <TextBlock Grid.Column="3" Text="{Binding MistakeCount}" Margin="5" />
                                     <TextBlock Grid.Column="4" Text="{Binding DateTimeAttempted}" Margin="5" />
                                 </Grid>
@@ -422,10 +420,10 @@
                                         <ColumnDefinition Width="2*" MinWidth="200" />
                                         <ColumnDefinition Width="1*" MinWidth="50" />
                                     </Grid.ColumnDefinitions>
-
+                                    
                                     <TextBlock Grid.Column="0" Text="{Binding Username}" Margin="5" />
                                     <TextBlock Grid.Column="1" Text="{Binding AverageScore}" Margin="5" />
-                                    <TextBlock Grid.Column="2" Text="{Binding AverageSolvingTime}" Margin="5" />
+                                    <TextBlock Grid.Column="2" Text="{Binding AverageSolvingTime, Converter={StaticResource DateTimeToStringConverter}, ConverterParameter=g}" Margin="5" />
                                     <TextBlock Grid.Column="3" Text="{Binding NumPuzzlesSolved}" Margin="5" />
                                 </Grid>
 

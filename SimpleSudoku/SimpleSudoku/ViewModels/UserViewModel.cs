@@ -53,12 +53,8 @@ namespace SC.SimpleSudoku.ViewModels
             {
                 CurrentUser.AverageSolvingTime = value;
                 OnPropertyChanged();
-                // ReSharper disable once ExplicitCallerInfoArgument
-                OnPropertyChanged(nameof(AverageSolvingTimeString));
             }
         }
-
-        public string AverageSolvingTimeString => AverageSolvingTime.ToString("g");
 
         public double AveragePuzzleDifficulty
         {

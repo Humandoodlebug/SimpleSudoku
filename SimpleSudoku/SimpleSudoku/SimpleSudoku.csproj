@@ -101,6 +101,7 @@
     <Compile Include="Converters\EnumDescriptionConverter.cs" />
     <Compile Include="Converters\InvertBooleanConverter.cs" />
     <Compile Include="Converters\NullableIntConverter.cs" />
+    <Compile Include="Converters\TimeSpanToStringConverter.cs" />
     <Compile Include="Migrations\20170110191520_InitialCreate.cs" />
     <Compile Include="Migrations\20170110191520_InitialCreate.designer.cs">
       <DependentUpon>20170110191520_InitialCreate.cs</DependentUpon>
