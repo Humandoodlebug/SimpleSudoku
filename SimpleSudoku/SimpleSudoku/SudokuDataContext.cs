@@ -8,6 +8,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace SC.SimpleSudoku
 {
+    /// <summary>
+    /// Used to specify the difficulty of a puzzle.
+    /// </summary>
     public enum PuzzleDifficulty
     {
         Easy,
@@ -29,12 +32,20 @@ namespace SC.SimpleSudoku
         public DbSet<Puzzle_Attempt> PuzzleAttempts { get; set; }
         public DbSet<Old_Password> OldPasswords { get; set; }
 
-        //This method is called when the database is being configured. It tells Entity Framework that we will be using a SQLite database with the file name "SudokuAppData.db".
+        /// <summary>
+        /// This method is called when the database is being configured. 
+        /// It tells Entity Framework that we will be using a SQLite database with the file name "SudokuAppData.db".
+        /// </summary>
+        /// <param name="optionsBuilder">Used to specify the kind of database to be used</param>
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlite("Filename=SudokuAppData.db");
         }
 
+        /// <summary>
+        /// Called when the database model is being generated. Specifies relationships between tables and primary and foreign keys.
+        /// </summary>
+        /// <param name="modelBuilder"></param>
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Old_Password>().HasKey(x => new {x.Username, x.OldPassword});
@@ -52,7 +63,10 @@ namespace SC.SimpleSudoku
 
         }
     }
-
+    
+    /// <summary>
+    /// Represents records of the Users table in the database.
+    /// </summary>
     public class User
     {
         [Key] public string Username { get; set; }
@@ -75,7 +89,9 @@ namespace SC.SimpleSudoku
         public DateTime CurrentPuzzleStartTime { get; set; }
     }
 
-
+    /// <summary>
+    /// Represents records of the Old_Passwords table in the database.
+    /// </summary>
     public class Old_Password
     {
         public string Username { get; set; }
@@ -83,7 +99,9 @@ namespace SC.SimpleSudoku
         public User User { get; set; }
     }
 
-
+    /// <summary>
+    /// Represents records of the Puzzles table in the database.
+    /// </summary>
     public class Puzzle
     {
         public int PuzzleSeed { get; set; }
@@ -91,7 +109,9 @@ namespace SC.SimpleSudoku
         public virtual ICollection<Puzzle_Attempt> PuzzleAttempts { get; set; }
     }
 
-
+    /// <summary>
+    /// Represents records of the Puzzle_Attempts table in the database.
+    /// </summary>
     public class Puzzle_Attempt
     {
         public string Username { get; set; }
@@ -111,6 +131,9 @@ namespace SC.SimpleSudoku
         public BasePuzzle BasePuzzle { get; set; }
     }
 
+    /// <summary>
+    /// Represents records of the Base_Puzzles table in the database.
+    /// </summary>
     public class BasePuzzle
     {
         [Key] public int BasePuzzleID { get; set; }
@@ -121,6 +144,9 @@ namespace SC.SimpleSudoku
         public virtual ICollection<Puzzle_Attempt> PuzzleAttempts { get; set; }
     }
 
+    /// <summary>
+    /// Represents records if the Mistakes table in the database.
+    /// </summary>
     public class Mistake
     {
         public string Username { get; set; }

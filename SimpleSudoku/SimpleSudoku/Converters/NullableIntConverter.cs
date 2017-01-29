@@ -9,13 +9,18 @@ using SC.SimpleSudoku.ViewModels;
 
 namespace SC.SimpleSudoku.Converters
 {
+    /// <summary>
+    /// Converts between a nullable integer and a string for binding purposes.
+    /// </summary>
     public class NullableIntConverter : IValueConverter
     {
+        //Converts 'value' from a nullable integer to a string.
         public object Convert(object value, Type targetType, object parameter, string language)
         {
             return value == null ? "" : ((int?)value).ToString();
         }
 
+        //Converts 'value' from a string to a nullable integer.
         public object ConvertBack(object value, Type targetType, object parameter, string language)
         {
             try
@@ -27,7 +32,7 @@ namespace SC.SimpleSudoku.Converters
             }
             catch
             {
-                return new ValidationResult("Parse Error :(");
+                return new ValidationResult("Parse Error :'(");
             }
         }
     }

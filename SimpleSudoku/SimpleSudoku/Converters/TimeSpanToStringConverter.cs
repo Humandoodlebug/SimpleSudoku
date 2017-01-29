@@ -15,7 +15,9 @@ namespace SC.SimpleSudoku.Converters
 
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            return ((TimeSpan)value).ToString((string)parameter); //Returns the TimeSpan converted to a string.
+            var timeSpan = (TimeSpan) value;
+            //Returns the TimeSpan converted to a string.
+            return $"{Math.Truncate(timeSpan.TotalHours):00}:{timeSpan.Minutes:00}:{timeSpan.Seconds:00}"; 
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)

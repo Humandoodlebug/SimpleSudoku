@@ -62,7 +62,7 @@
                 </CommandBar.PrimaryCommands>
             </CommandBar>
             <TextBlock HorizontalAlignment="Left" Margin="50,30,0,0" Grid.Row="1" TextWrapping="Wrap"
-                       Text="{Binding PuzzleTimer.TimerString}" FontSize="35" VerticalAlignment="Top"
+                       Text="{Binding PuzzleTimer.CurrenTimeSpan, Converter={StaticResource TimeSpanToStringConverter}}" FontSize="35" VerticalAlignment="Top"
                        Visibility="{Binding Options.IsPuzzleTimerVisible, Converter={StaticResource BooleanToVisibilityConverter}}" />
 
             <ScrollViewer Grid.Row="2" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
@@ -197,7 +197,7 @@
                                 </StackPanel>
                                 <StackPanel Grid.Column="1">
                                     <TextBlock Text="{Binding CurrentUser.AverageScore}" Margin="5" />
-                                    <TextBlock Text="{Binding CurrentUser.AverageSolvingTime, Converter={StaticResource DateTimeToStringConverter}, ConverterParameter=g}" Margin="5" />
+                                    <TextBlock Text="{Binding CurrentUser.AverageSolvingTime, Converter={StaticResource TimeSpanToStringConverter}, ConverterParameter=g}" Margin="5" />
                                     <TextBlock Text="{Binding CurrentUser.AveragePuzzleDifficulty}" Margin="5" />
                                     <TextBlock Text="{Binding CurrentUser.NumPuzzlesSolved}" Margin="5" />
                                 </StackPanel>
@@ -363,7 +363,7 @@
 
                                     <TextBlock Grid.Column="0" Text="{Binding Username}" Margin="5" />
                                     <TextBlock Grid.Column="1" Text="{Binding Score}" Margin="5" />
-                                    <TextBlock Grid.Column="2" Text="{Binding SolvingTime, Converter={StaticResource DateTimeToStringConverter}, ConverterParameter=g}" Margin="5" />
+                                    <TextBlock Grid.Column="2" Text="{Binding SolvingTime, Converter={StaticResource TimeSpanToStringConverter}, ConverterParameter=g}" Margin="5" />
                                     <TextBlock Grid.Column="3" Text="{Binding MistakeCount}" Margin="5" />
                                     <TextBlock Grid.Column="4" Text="{Binding DateTimeAttempted}" Margin="5" />
                                 </Grid>
@@ -423,7 +423,7 @@
                                     
                                     <TextBlock Grid.Column="0" Text="{Binding Username}" Margin="5" />
                                     <TextBlock Grid.Column="1" Text="{Binding AverageScore}" Margin="5" />
-                                    <TextBlock Grid.Column="2" Text="{Binding AverageSolvingTime, Converter={StaticResource DateTimeToStringConverter}, ConverterParameter=g}" Margin="5" />
+                                    <TextBlock Grid.Column="2" Text="{Binding AverageSolvingTime, Converter={StaticResource TimeSpanToStringConverter}, ConverterParameter=g}" Margin="5" />
                                     <TextBlock Grid.Column="3" Text="{Binding NumPuzzlesSolved}" Margin="5" />
                                 </Grid>
 

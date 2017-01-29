@@ -1,44 +1,52 @@
 ﻿using System;
-using Windows.Foundation.Metadata;
 
 namespace SC.SimpleSudoku.Model
 {
     internal class Sudoku
     {
+        /// <summary>
+        /// Holds the base puzzle that the Sudoku puzzle is generated from.
+        /// </summary>
         public BasePuzzle BasePuzzle { get; }
 
+        /// <summary>
+        /// Holds the problem data of the Sudoku puzzle.
+        /// </summary>
         public byte[,] ProblemData { get; }
 
+        /// <summary>
+        /// Holds the Sudoku puzzle's solution.
+        /// </summary>
         public byte[,] SolutionData { get; }
 
-        public int Seed { get; private set; }
+        /// <summary>
+        /// Holds the Sudoku puzzle's seed.
+        /// </summary>
+        public int Seed { get; }
 
+        /// <summary>
+        /// The Sudoku constructor.
+        /// </summary>
+        /// <param name="basePuzzle">The base puzzle from which to generate the Sudoku puzzle.</param>
+        /// <param name="seed">The seed to use in generating the Sudoku puzzle.</param>
         public Sudoku(BasePuzzle basePuzzle, int? seed = null)
         {
             BasePuzzle = basePuzzle;
+            //If the seed is not specified, generate a new random seed.
             if (seed == null)
                 seed = new Random().Next();
             Seed = seed.Value;
+            //Generate Problem and Solution data for the puzzle.
             ProblemData = GeneratePuzzle(basePuzzle.PuzzleProblemData, Seed);
             SolutionData = GeneratePuzzle(basePuzzle.PuzzleSolutionData, Seed);
         }
 
-        //private byte[] GetRow([Range(0, 8)] int index)
-        //{
-        //    var row = new byte[9];
-        //    for (var i = 0; i < row.Length; i++)
-        //        row[i] = ProblemData[index, i];
-        //    return row;
-        //}
-
-        //private byte[] GetColumn([Range(0, 8)] int index)
-        //{
-        //    var column = new byte[9];
-        //    for (var i = 0; i < column.Length; i++)
-        //        column[i] = ProblemData[i, index];
-        //    return column;
-        //}
-
+        /// <summary>
+        /// Generates a puzzle from a seed and some base puzzle data.
+        /// </summary>
+        /// <param name="puzzleDataString">The base puzzle data to use.</param>
+        /// <param name="seed">The seed to use.</param>
+        /// <returns>The puzzle data generated.</returns>
         private byte[,] GeneratePuzzle(string puzzleDataString, int seed)
         {
             var random = new Random(seed);
@@ -76,6 +84,11 @@ namespace SC.SimpleSudoku.Model
             return puzzleData;
         }
 
+        /// <summary>
+        /// Swaps a random group of 3 rows (1,2,3 or 4,5,6 or 7,8,9) with another group of 3 rows in the puzzle.
+        /// </summary>
+        /// <param name="random">The random number generator to use.</param>
+        /// <param name="puzzleData">The puzzle data to perform the transformation on.</param>
         private void PuzzleMajorRowSwap(Random random, byte[,] puzzleData)
         {
             switch (random.Next(3))
@@ -98,6 +111,11 @@ namespace SC.SimpleSudoku.Model
             }
         }
 
+        /// <summary>
+        /// Swaps a random group of 3 columns (1,2,3 or 4,5,6 or 7,8,9) with another group of 3 columns in the puzzle.
+        /// </summary>
+        /// <param name="random">The random number generator to use.</param>
+        /// <param name="puzzleData">The puzzle data to perform the transformation on.</param>
         private void PuzzleMajorColumnSwap(Random random, byte[,] puzzleData)
         {
             switch (random.Next(3))
@@ -120,6 +138,11 @@ namespace SC.SimpleSudoku.Model
             }
         }
 
+        /// <summary>
+        /// Swaps a random row with another row in the same group of 3.
+        /// </summary>
+        /// <param name="random">The random number generator to use.</param>
+        /// <param name="puzzleData">The puzzle data to perform the transformation on.</param>
         private void PuzzleMinorRowSwap(Random random, byte[,] puzzleData)
         {
             var r = random.Next(1, 10);
@@ -138,6 +161,11 @@ namespace SC.SimpleSudoku.Model
             }
         }
 
+        /// <summary>
+        /// Swaps a random column with another column in the same group of 3.
+        /// </summary>
+        /// <param name="random">The random number generator to use.</param>
+        /// <param name="puzzleData">The puzzle data to perform the transformation on.</param>
         private void PuzzleMinorColumnSwap(Random random, byte[,] puzzleData)
         {
             var r = random.Next(1, 10);
@@ -156,6 +184,11 @@ namespace SC.SimpleSudoku.Model
             }
         }
 
+        /// <summary>
+        /// Swaps all cells over the main diagonal of the puzzle.
+        /// Reflects the puzzle over the main diagonal
+        /// </summary>
+        /// <param name="puzzleData">The puzzle data to perform the transformation on.</param>
         private void PuzzleMainDiagTransformation(byte[,] puzzleData)
         {
             for (var i = 0; i < 9; i++)
@@ -169,6 +202,11 @@ namespace SC.SimpleSudoku.Model
             }
         }
 
+        /// <summary>
+        /// Swaps all cells over the minor diagonal of the puzzle.
+        /// Reflects the puzzle over the minor diagonal
+        /// </summary>
+        /// <param name="puzzleData">The puzzle data to perform the transformation on.</param>
         private void PuzzleMinorDiagTransformation(byte[,] puzzleData)
         {
             for (var i = 0; i < 9; i++)
@@ -182,13 +220,12 @@ namespace SC.SimpleSudoku.Model
             }
         }
 
-        //private void PuzzleRowTransformation(byte[,] puzzleData)
-        //{
-        //    SwapRows(puzzleData, 0, 8);
-        //    SwapRows(puzzleData, 1, 7);
-        //    SwapRows(puzzleData, 2, 4);
-        //}
-
+        /// <summary>
+        /// Swaps two given rows over in the puzzle.
+        /// </summary>
+        /// <param name="puzzleData">The puzzle data to perform the transformation on.</param>
+        /// <param name="row1">The first row to swap.</param>
+        /// <param name="row2">The second row to swap.</param>
         private void SwapRows(byte[,] puzzleData, int row1, int row2)
         {
             for (var i = 0; i < 9; i++)
@@ -199,13 +236,12 @@ namespace SC.SimpleSudoku.Model
             }
         }
 
-        //private void PuzzleColumnTransformation(byte[,] puzzleData)
-        //{
-        //    SwapRows(puzzleData, 0, 8);
-        //    SwapRows(puzzleData, 1, 7);
-        //    SwapRows(puzzleData, 2, 4);
-        //}
-
+        /// <summary>
+        /// Swaps two given columns over.
+        /// </summary>
+        /// <param name="puzzleData">The puzzle data to perform the transformation on.</param>
+        /// <param name="column1">The first column to swap.</param>
+        /// <param name="column2">The second column to swap.</param>
         private void SwapColumns(byte[,] puzzleData, int column1, int column2)
         {
             for (var i = 0; i < 9; i++)

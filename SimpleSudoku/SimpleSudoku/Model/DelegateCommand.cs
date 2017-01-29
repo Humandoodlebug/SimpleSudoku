@@ -4,24 +4,29 @@ using System.Windows.Input;
 namespace SC.SimpleSudoku.Model
 {
     //From http://www.wpftutorial.net/DelegateCommand.html
+
+    /// <summary>
+    ///     An open source implementation of the ICommand interface, allowing an action to be bound to on the view model and
+    ///     performed by the User Interface.
+    /// </summary>
     public class DelegateCommand : ICommand
     {
         private readonly Predicate<object> _canExecute;
         private readonly Action<object> _execute;
 
-        public event EventHandler CanExecuteChanged;
-
         public DelegateCommand(Action<object> execute)
-                       : this(execute, null)
+            : this(execute, null)
         {
         }
 
         public DelegateCommand(Action<object> execute,
-                       Predicate<object> canExecute)
+            Predicate<object> canExecute)
         {
             _execute = execute;
             _canExecute = canExecute;
         }
+
+        public event EventHandler CanExecuteChanged;
 
         public bool CanExecute(object parameter)
         {

@@ -10,7 +10,7 @@
     <converters:InvertBooleanConverter x:Key="InvertBooleanConverter" />
     <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     <converters:NullableIntConverter x:Key="NullableIntConverter"/>
-    <converters:TimeSpanToStringConverter x:Key="DateTimeToStringConverter"/>
+    <converters:TimeSpanToStringConverter x:Key="TimeSpanToStringConverter"/>
 
     <Style TargetType="Button">
         <Setter Property="Background" Value="{StaticResource ApplicationPageBackgroundThemeBrush}" />
