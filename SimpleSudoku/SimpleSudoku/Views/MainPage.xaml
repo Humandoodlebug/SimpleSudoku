@@ -23,10 +23,12 @@
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center"
                     Visibility="{Binding CurrentNavState.IsPuzzleDifficultyVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Margin="5" Text="Puzzle Seed:" />
+            
+            <TextBlock Text="{Binding SeedErrorMessage}" Foreground="Red" Margin="10,5,10,1"/>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <TextBlock Margin="5,1,5,5" Text="Puzzle Seed:" />
                 <TextBox
-                    Text="{Binding EnteredSeed, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, Converter={StaticResource NullableIntConverter}}"
+                    Text="{Binding EnteredSeedString, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                     PlaceholderText="Random Seed" />
             </StackPanel>
             <Button Content="Easy" FontSize="28" HorizontalAlignment="Center" Margin="0,5,0,0"

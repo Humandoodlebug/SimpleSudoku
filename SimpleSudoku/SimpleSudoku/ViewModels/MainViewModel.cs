@@ -59,6 +59,7 @@ namespace SC.SimpleSudoku.ViewModels
         private int _selectedColumn = -1;
         private int _selectedRow = -1;
         private User[] _user;
+        private string _seedErrorMessage;
 
         /// <summary>
         ///     The MainViewModel constructor. Runs when the app starts.
@@ -323,10 +324,47 @@ namespace SC.SimpleSudoku.ViewModels
         }
 
 
+        public string SeedErrorMessage
+        {
+            get { return _seedErrorMessage; }
+            private set
+            {
+                if (value == _seedErrorMessage)
+                    return;
+                _seedErrorMessage = value;
+                OnPropertyChanged();
+            }
+        }
+
         /// <summary>
-        ///     Bound to by the UI. Holds the seed entered by the user when generating a puzzle.
+        /// Bound to by the UI. Converts the seed entered by the user between an integer and a string. Also handles relevent validation errors.
         /// </summary>
-        public int? EnteredSeed //The ? means 'nullable'.
+        public string EnteredSeedString
+        {
+            get { return EnteredSeed?.ToString() ?? string.Empty; }
+            set
+            {
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    EnteredSeed = null;
+                    SeedErrorMessage = string.Empty;
+                }
+                else
+                {
+                    int result;
+                    SeedErrorMessage = int.TryParse(value, out result)
+                        ? string.Empty
+                        : "Sorry, the seed you've entered isn't a valid integer! Please try again...";
+                    if (string.IsNullOrEmpty(SeedErrorMessage))
+                        EnteredSeed = result;
+                }
+            }
+        }
+
+        /// <summary>
+        ///      Holds the seed entered by the user when generating a puzzle.
+        /// </summary>
+        private int? EnteredSeed //The ? means 'nullable'.
         {
             get { return _enteredSeed; }
             set
@@ -335,6 +373,7 @@ namespace SC.SimpleSudoku.ViewModels
                     return;
                 _enteredSeed = value;
                 OnPropertyChanged();
+                OnPropertyChanged(nameof(EnteredSeedString));
             }
         }
 
@@ -552,6 +591,9 @@ namespace SC.SimpleSudoku.ViewModels
         /// <param name="difficulty">The difficulty sudoku puzzle to generate.</param>
         private void GeneratePuzzle(string difficulty)
         {
+            //If there is a validation error message still being shown, don't try to generate the puzzle.
+            if (!string.IsNullOrEmpty(SeedErrorMessage))
+                return;
             BasePuzzle[] basePuzzles;
             //Get a list of base puzzles of difficulty selected by the user.
             switch (difficulty)
@@ -861,8 +903,8 @@ namespace SC.SimpleSudoku.ViewModels
             //If the password checks out (no error messages are displayed) then continue.
             else
             {
-                //Add the current password to the old passwords list.
-                Database.Add(new Old_Password {Username = CurrentUser.Username, OldPassword = CurrentUser.Password});
+                //Add the current password to the old passwords list
+                Database.Add(new Old_Password {Username = CurrentUser.Username, OldPassword = CurrentUser.Password ?? string.Empty});
                 //Set the user's password in the database to the newly entered password (encrypted)
                 CurrentUser.Password = Encryption.Encrypt(ChangePasswordBox1);
                 //Display a helpful message instead of an error.
@@ -997,7 +1039,7 @@ namespace SC.SimpleSudoku.ViewModels
         private bool IsPasswordValid(string password)
         {
             return !string.IsNullOrEmpty(password) &&
-                   Regex.IsMatch(password, @"^(?=.*(\d|\W))(?=.*[a-z])(?=.*[A-Z])(?!.*\s).{6,40}$");
+                   Regex.IsMatch(password, @"^(?=.*(\d|\W))(?=.*[a-z])(?=.*[A-Z])(?!.*\s).{6,42}$");
         }
 
         /// <summary>
@@ -1016,7 +1058,7 @@ namespace SC.SimpleSudoku.ViewModels
                 LoginErrorMessage = "The username field cannot be left blank.";
             }
             //If no user with this username was found in the database or the password entered doesn't match, display an error message.
-            else if (user == null || Encryption.Decrypt(user.Password) != EnteredPassword)
+            else if (user == null || Encryption.Decrypt(user.Password) != EnteredPassword && !string.IsNullOrEmpty(user.Password))
             {
                 LoginErrorMessage = "Sorry, this username/password combination is not recognised, please try again.";
             }
@@ -1244,6 +1286,8 @@ namespace SC.SimpleSudoku.ViewModels
         /// <returns>The decrypted password.</returns>
         public static string Decrypt(string s)
         {
+            if (s == null)
+                return string.Empty;
             var random = new Random(Seed);
             return string.Join("", from c in s select (char) (c - random.Next(-30, 30)));
         }
